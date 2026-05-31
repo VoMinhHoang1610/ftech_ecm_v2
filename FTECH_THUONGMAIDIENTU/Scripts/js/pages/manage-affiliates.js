@@ -1,0 +1,408 @@
+// --- ADMIN AFFILIATES MANAGEMENT LOGIC ---
+
+document.addEventListener('DOMContentLoaded', function () {
+  let selectedFilter = 'all';
+  let editMode = 'create'; // 'create', 'edit', 'repair'
+  let currentEditAffId = null;
+
+  // Enrich default seeds to include rich metadata
+  enrichSeedAffiliates();
+
+  // Render everything on load
+  renderAll();
+
+  // Search listeners
+  document.getElementById('btnSearch').addEventListener('click', renderAll);
+  document.getElementById('searchQuery').addEventListener('keyup', function (e) {
+    if (e.key === 'Enter') renderAll();
+  });
+
+  // Filter select listeners
+  document.getElementById('filterPartner').addEventListener('change', renderAll);
+  document.getElementById('filterSort').addEventListener('change', renderAll);
+
+  // Close modals on overlay click
+  document.querySelectorAll('.modal-overlay').forEach(m => m.addEventListener('click', function (e) {
+    if (e.target === this) this.classList.remove('open');
+  }));
+
+  // Filter chips
+  window.setF = function (el) {
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    selectedFilter = el.getAttribute('data-filter') || 'all';
+    renderAll();
+  };
+
+  // --- ACTIONS ---
+
+  window.openAffiliateModal = function (mode, id = '') {
+    editMode = mode;
+    currentEditAffId = id;
+    const title = document.getElementById('affiliateModalTitle');
+    
+    // Clear / reset fields
+    document.getElementById('affiliateNameField').value = '';
+    document.getElementById('affiliatePartnerField').value = 'Shopee Affiliate';
+    document.getElementById('affiliatePostField').value = '';
+    document.getElementById('affiliateStatusField').value = 'active';
+    document.getElementById('affiliateUrlField').value = '';
+    document.getElementById('affiliateImageField').value = '';
+    document.getElementById('affiliateNoteField').value = '';
+
+    if (mode === 'create') {
+      title.textContent = 'Tạo link affiliate mới';
+    } else {
+      const aff = FTECHDB.getAffiliates().find(a => a.id === id);
+      if (!aff) return;
+
+      if (mode === 'repair') {
+        title.textContent = 'Sửa link affiliate bị lỗi';
+      } else {
+        title.textContent = 'Cập nhật affiliate link';
+      }
+
+      document.getElementById('affiliateNameField').value = aff.name || '';
+      document.getElementById('affiliatePartnerField').value = aff.partner || 'Shopee Affiliate';
+      document.getElementById('affiliatePostField').value = aff.attachedPost || '';
+      document.getElementById('affiliateStatusField').value = aff.status || 'active';
+      document.getElementById('affiliateUrlField').value = aff.url || '';
+      document.getElementById('affiliateImageField').value = aff.image || '';
+      document.getElementById('affiliateNoteField').value = aff.note || '';
+    }
+
+    document.getElementById('affiliateModal').classList.add('open');
+  };
+
+  window.saveAffiliateLink = function () {
+    const name = document.getElementById('affiliateNameField').value.trim();
+    const partner = document.getElementById('affiliatePartnerField').value;
+    const attachedPost = document.getElementById('affiliatePostField').value.trim();
+    const status = document.getElementById('affiliateStatusField').value;
+    const url = document.getElementById('affiliateUrlField').value.trim();
+    const image = document.getElementById('affiliateImageField').value.trim();
+    const note = document.getElementById('affiliateNoteField').value.trim();
+
+    if (!name || !url) {
+      alert('Vui lòng nhập tên link/sản phẩm và đường dẫn affiliate.');
+      return;
+    }
+
+    const affiliates = FTECHDB.getAffiliates();
+    let affData = {};
+
+    if (editMode === 'create') {
+      affData = {
+        id: 'aff-' + Date.now(),
+        clicks: 0,
+        cvr: '5.0%',
+        date: new Date().toLocaleDateString('vi-VN'),
+        commission: partner === 'Shopee Affiliate' ? '4-8%' : partner === 'Lazada Partner' ? '3-6%' : '2-5%'
+      };
+    } else {
+      const existing = affiliates.find(a => a.id === currentEditAffId);
+      if (!existing) return;
+      affData = { ...existing };
+      if (editMode === 'repair' && affData.status === 'error') {
+        affData.status = 'active'; // repaired!
+      }
+    }
+
+    affData.name = name;
+    affData.partner = partner;
+    affData.attachedPost = attachedPost;
+    affData.status = status;
+    affData.url = url;
+    affData.image = image || 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=120&q=80';
+    affData.note = note;
+
+    FTECHDB.saveAffiliate(affData);
+    alert(editMode === 'create' ? 'Đã tạo link affiliate mới thành công.' : 'Đã cập nhật link affiliate thành công.');
+    window.closeAffiliateModal('affiliateModal');
+    renderAll();
+  };
+
+  window.doDeleteAffiliate = function (id) {
+    if (confirm('Bạn có chắc chắn muốn xóa link affiliate này không?')) {
+      FTECHDB.deleteAffiliate(id);
+      alert('Đã xóa link affiliate thành công.');
+      renderAll();
+    }
+  };
+
+  window.openCommissionModal = function (partner = '') {
+    if (partner) {
+      document.getElementById('commissionPartnerField').value = partner;
+    }
+    document.getElementById('commissionModal').classList.add('open');
+  };
+
+  window.saveCommission = function () {
+    alert('Đã lưu tỷ lệ hoa hồng mới thành công.');
+    window.closeAffiliateModal('commissionModal');
+  };
+
+  window.closeAffiliateModal = function (id) {
+    document.getElementById(id).classList.remove('open');
+  };
+
+  // --- BUSINESS LOGIC ---
+
+  function enrichSeedAffiliates() {
+    const affiliates = FTECHDB.getAffiliates();
+    let hasChanges = false;
+
+    // Enrich aff-1
+    const a1 = affiliates.find(a => a.id === 'aff-1');
+    if (a1 && !a1.name) {
+      a1.name = 'iPhone 16 Pro Max - Shopee';
+      a1.attachedPost = 'Review iPhone 16 Pro Max: Đáng mua không năm 2026?';
+      a1.status = 'active';
+      a1.cvr = '6.8%';
+      a1.commission = '4-8%';
+      a1.date = '21/03/2026';
+      a1.image = 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=120&q=80';
+      a1.author = 'Nguyễn Tuấn Anh';
+      FTECHDB.saveAffiliate(a1);
+      hasChanges = true;
+    }
+
+    // Enrich aff-2
+    const a2 = affiliates.find(a => a.id === 'aff-2');
+    if (a2 && !a2.name) {
+      a2.name = 'Laptop ASUS ROG - Lazada';
+      a2.attachedPost = 'Top 5 Laptop Gaming tầm trung tốt nhất 2026';
+      a2.status = 'active';
+      a2.cvr = '5.2%';
+      a2.commission = '3-6%';
+      a2.date = '18/03/2026';
+      a2.image = 'https://images.unsplash.com/photo-1593642702821-c8da6771f0c6?auto=format&fit=crop&w=120&q=80';
+      a2.author = 'Trương Thị Kiều Nhi';
+      FTECHDB.saveAffiliate(a2);
+      hasChanges = true;
+    }
+
+    // Seed aff-3 (error link)
+    if (!affiliates.find(a => a.id === 'aff-3')) {
+      FTECHDB.saveAffiliate({
+        id: 'aff-3',
+        partner: 'Tiki Trading',
+        type: 'Link lỗi',
+        url: 'https://tiki.vn/go/sony-xm5-404-error',
+        clicks: 320,
+        name: 'Sony WH-1000XM5 - Tiki',
+        attachedPost: 'So sánh AirPods Pro 2 vs Sony WH-1000XM5: Chọn cái nào?',
+        status: 'error',
+        cvr: '0%',
+        commission: '2-5%',
+        date: '02/03/2026',
+        image: 'https://images.unsplash.com/photo-1546435770-a3e426bf472b?auto=format&fit=crop&w=120&q=80',
+        author: 'Võ Minh Hoàng',
+        note: 'Link trỏ đến trang sản phẩm đã bị gỡ'
+      });
+      hasChanges = true;
+    }
+
+    // Seed aff-4 (active link)
+    if (!affiliates.find(a => a.id === 'aff-4')) {
+      FTECHDB.saveAffiliate({
+        id: 'aff-4',
+        partner: 'Shopee Affiliate',
+        type: 'Link mua chính',
+        url: 'https://shopee.vn/product/airpods-pro-2',
+        clicks: 654,
+        name: 'AirPods Pro 2 - Shopee',
+        attachedPost: 'So sánh AirPods Pro 2 vs Sony WH-1000XM5: Chọn cái nào?',
+        status: 'active',
+        cvr: '5.8%',
+        commission: '4-8%',
+        date: '16/03/2026',
+        image: 'https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?auto=format&fit=crop&w=120&q=80',
+        author: 'Phạm Thái Bảo'
+      });
+      hasChanges = true;
+    }
+
+    // Seed aff-5 (inactive link)
+    if (!affiliates.find(a => a.id === 'aff-5')) {
+      FTECHDB.saveAffiliate({
+        id: 'aff-5',
+        partner: 'Lazada Partner',
+        type: 'Link nháp',
+        url: 'https://lazada.vn/s24-ultra',
+        clicks: 0,
+        name: 'Samsung S24 Ultra - Lazada',
+        attachedPost: 'Apple Watch Series 10 — Có gì mới? Có nên nâng cấp không?',
+        status: 'inactive',
+        cvr: '0%',
+        commission: '3-6%',
+        date: '05/03/2026',
+        image: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&w=120&q=80',
+        author: 'Super Admin'
+      });
+      hasChanges = true;
+    }
+  }
+
+  function renderAll() {
+    const affiliates = FTECHDB.getAffiliates();
+
+    // 1. Stats and metrics calculations
+    const totalCount = affiliates.length;
+    const errorCount = affiliates.filter(a => a.status === 'error').length;
+    const activeCount = affiliates.filter(a => a.status === 'active').length;
+    const productCount = affiliates.length; // all are products
+    const postAttachedCount = affiliates.filter(a => a.attachedPost).length;
+    
+    let totalClicks = 0;
+    let sumCtr = 0;
+    let ctrCount = 0;
+
+    affiliates.forEach(a => {
+      totalClicks += parseInt(a.clicks) || 0;
+      const cvrVal = parseFloat(a.cvr);
+      if (!isNaN(cvrVal)) {
+        sumCtr += cvrVal;
+        ctrCount++;
+      }
+    });
+
+    const displayClicks = totalClicks >= 1000 ? `${(totalClicks / 1000).toFixed(1)}K` : totalClicks;
+    const displayComm = `${(totalClicks * 1500).toLocaleString('vi-VN')}₫`;
+    const avgCtr = ctrCount > 0 ? `${(sumCtr / ctrCount).toFixed(1)}%` : '5.0%';
+
+    document.querySelector('.sv-total-links').textContent = totalCount;
+    document.querySelector('.sv-total-clicks').textContent = displayClicks;
+    document.querySelector('.sv-avg-ctr').textContent = avgCtr;
+    document.querySelector('.sv-total-comm').textContent = displayComm;
+
+    // Update filter chips count dynamically
+    const chips = document.querySelectorAll('.filter-chip');
+    chips.forEach(chip => {
+      const type = chip.getAttribute('data-filter');
+      if (type === 'all') chip.textContent = `Tất cả (${totalCount})`;
+      else if (type === 'product') chip.textContent = `Theo sản phẩm (${productCount})`;
+      else if (type === 'post') chip.textContent = `Theo bài viết (${postAttachedCount})`;
+      else if (type === 'partner') chip.textContent = `Theo đối tác (${totalCount})`;
+      else if (type === 'error') chip.textContent = `Lỗi (${errorCount})`;
+    });
+
+    // Toggle error warning banner
+    const banner = document.querySelector('.warning-banner');
+    if (banner) {
+      if (errorCount > 0) {
+        banner.style.display = 'flex';
+        banner.querySelector('.wb-text').innerHTML = `<strong>${errorCount} link affiliate bị lỗi</strong> — Liên kết trỏ đến trang không tồn tại hoặc đã hết hạn. Kiểm tra và cập nhật để tránh mất doanh thu.`;
+        banner.querySelector('button').onclick = function () {
+          const errChip = Array.from(chips).find(c => c.getAttribute('data-filter') === 'error');
+          if (errChip) window.setF(errChip);
+        };
+      } else {
+        banner.style.display = 'none';
+      }
+    }
+
+    // 2. Filters
+    const searchQuery = document.getElementById('searchQuery').value.toLowerCase().trim();
+    const filterPartner = document.getElementById('filterPartner').value;
+    const filterSort = document.getElementById('filterSort').value;
+
+    let filtered = affiliates.filter(a => {
+      // Chip filters
+      if (selectedFilter === 'error' && a.status !== 'error') return false;
+      if (selectedFilter === 'post' && !a.attachedPost) return false;
+
+      // Partner dropdown filter
+      if (filterPartner && a.partner !== filterPartner) return false;
+
+      // Search Query
+      if (searchQuery) {
+        const nameMatch = (a.name || '').toLowerCase().includes(searchQuery);
+        const postMatch = (a.attachedPost || '').toLowerCase().includes(searchQuery);
+        const partnerMatch = (a.partner || '').toLowerCase().includes(searchQuery);
+        if (!nameMatch && !postMatch && !partnerMatch) return false;
+      }
+
+      return true;
+    });
+
+    // 3. Sort list
+    if (filterSort === 'clicks') {
+      filtered.sort((a, b) => b.clicks - a.clicks);
+    } else if (filterSort === 'newest') {
+      filtered.sort((a, b) => {
+        const da = new Date(a.date.split('/').reverse().join('-'));
+        const db = new Date(b.date.split('/').reverse().join('-'));
+        return db - da;
+      });
+    }
+
+    // 4. Render Table
+    const tbody = document.getElementById('affiliatesTableBody');
+    if (!tbody) return;
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = `<div style="padding: 30px; text-align: center; color: var(--muted);">📭 Không tìm thấy link affiliate nào khớp bộ lọc.</div>`;
+      document.querySelector('.pag-info').textContent = `Hiển thị 0 / 0 links`;
+      return;
+    }
+
+    tbody.innerHTML = filtered.map(a => {
+      const isError = a.status === 'error';
+      const isInactive = a.status === 'inactive';
+      
+      const rowClass = isError ? 't-row u-style-048' : isInactive ? 't-row u-style-050' : 't-row';
+      const statusLabel = isError ? 'Link 404' : isInactive ? 'Tắt' : 'Hoạt động';
+      const statusClass = isError ? 's-error' : isInactive ? 's-inactive' : 's-active';
+      const titleSpan = isError ? `${a.name} <span class="u-style-049">LINK LỖI</span>` : a.name;
+      const urlClass = isError ? 'link-url u-style-046' : 'link-url';
+      
+      const clicksDisplay = a.clicks.toLocaleString();
+      const conversions = isError || isInactive ? '-' : `${(a.clicks * 0.05).toFixed(1)}%`;
+
+      // Actions buttons
+      let actionButtons = '';
+      if (isError) {
+        actionButtons = `
+          <button class="act" onclick="openAffiliateModal('repair', '${a.id}')" title="Sửa lỗi link">🔧</button>
+          <button class="act" onclick="openAffiliateModal('edit', '${a.id}')" title="Sửa chi tiết">✏️</button>
+          <button class="act" onclick="doDeleteAffiliate('${a.id}')" title="Xóa">🗑️</button>
+        `;
+      } else {
+        actionButtons = `
+          <button class="act" onclick="openAffiliateModal('edit', '${a.id}')" title="Sửa chi tiết">✏️</button>
+          <button class="act" onclick="openCommissionModal('${a.partner}')" title="Cấu hình hoa hồng">⚙</button>
+          <button class="act" onclick="doDeleteAffiliate('${a.id}')" title="Xóa">🗑️</button>
+        `;
+      }
+
+      return `
+        <div class="${rowClass}">
+          <div>
+            <div class="link-title">
+              <a class="product-link" href="product.html">
+                <img class="product-thumb" src="${a.image || 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=120&q=80'}" alt="${a.name}">
+                <span>${titleSpan}</span>
+              </a>
+            </div>
+            <div class="${urlClass}">${a.url}</div>
+            <div class="link-tags">
+              <span class="ltag">${a.partner}</span>
+              <span class="ltag">Tác giả: ${a.author || 'Super Admin'}</span>
+            </div>
+          </div>
+          <div class="cell-muted">${a.partner.split(' ')[0]}</div>
+          <div class="cell-muted">${a.attachedPost ? a.attachedPost.substring(0, 30) + '...' : '-'}</div>
+          <div class="metric-g">${clicksDisplay}</div>
+          <div class="metric-a">${a.cvr}</div>
+          <div class="cell-muted">${a.date}</div>
+          <div class="metric-a">${a.commission}</div>
+          <div><span class="${statusClass}">${statusLabel}</span></div>
+          <div class="row-acts">${actionButtons}</div>
+        </div>
+      `;
+    }).join('');
+
+    document.querySelector('.pag-info').textContent = `Hiển thị 1-${filtered.length} / ${filtered.length} links`;
+  }
+});
