@@ -17,16 +17,19 @@ function makeLabel(t) {
 function makeCard(p) {
   const displayName = p.name || p.title || 'Sản phẩm công nghệ';
   const displayId = p.id || 'post-1';
+  const displayPrice = typeof p.price === 'number' ? window.FTECHDB.formatMoney(p.price) : p.price;
+  const displayOldPrice = p.old || (p.oldPrice ? window.FTECHDB.formatMoney(p.oldPrice) : '');
+  const displayDiscount = typeof p.discount === 'number' ? `-${p.discount}%` : p.discount;
   return `<div class="prod-card">
     <div class="prod-img">${makeLabel(p.label)}<div class="prod-fav">🤍</div><img src="${p.image}" alt="${displayName}"></div>
     <div class="prod-body">
       <div class="prod-brand">${p.brand || 'FTECH'}</div>
       <div class="prod-name">${displayName}</div>
-      <div class="prod-stars"><span class="stars">${'⭐'.repeat(p.stars || 5)}</span>${p.reviews?`<span class="reviews">(${p.reviews.toLocaleString()})</span>`:''}</div>
+      <div class="prod-stars"><span class="stars">${'⭐'.repeat(Math.round(p.stars || 5))}</span>${p.reviews?`<span class="reviews">(${p.reviews.toLocaleString()})</span>`:''}</div>
       <div class="prod-price-row">
-        <span class="prod-price-new">${p.price}</span>
-        ${p.old?`<span class="prod-price-old">${p.old}</span>`:''}
-        ${p.discount?`<span class="prod-discount">${p.discount}</span>`:''}
+        <span class="prod-price-new">${displayPrice}</span>
+        ${displayOldPrice?`<span class="prod-price-old">${displayOldPrice}</span>`:''}
+        ${displayDiscount?`<span class="prod-discount">${displayDiscount}</span>`:''}
       </div>
       <a class="prod-add" href="product.html?id=${displayId}">Xem review & nơi mua</a>
     </div>

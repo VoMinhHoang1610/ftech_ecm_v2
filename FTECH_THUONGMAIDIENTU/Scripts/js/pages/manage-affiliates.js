@@ -138,8 +138,25 @@ document.addEventListener('DOMContentLoaded', function () {
   };
 
   window.saveCommission = function () {
-    alert('Đã lưu tỷ lệ hoa hồng mới thành công.');
+    const partnerName = document.getElementById('commissionPartnerField').value;
+    const modal = document.getElementById('commissionModal');
+    const inputs = modal.querySelectorAll('.input-field');
+    const minRate = parseFloat(String(inputs[0].value || '').replace(',', '.')) || 0;
+    const maxRate = parseFloat(String(inputs[1].value || '').replace(',', '.')) || minRate;
+    const commissionRate = (Math.max(minRate, maxRate) || 0) / 100;
+    const partner = FTECHDB.getPartners().find(p => p.name === partnerName);
+
+    if (!partner || commissionRate <= 0) {
+      alert('Vui lòng chọn đối tác và nhập tỷ lệ hoa hồng hợp lệ.');
+      return;
+    }
+
+    partner.commissionRate = commissionRate;
+    partner.commission = `${minRate}-${maxRate}%`;
+    FTECHDB.savePartner(partner);
+    alert('Đã lưu tỷ lệ hoa hồng mới và ghi log thay đổi commission.');
     window.closeAffiliateModal('commissionModal');
+    renderAll();
   };
 
   window.closeAffiliateModal = function (id) {

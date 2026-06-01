@@ -7,6 +7,7 @@
     'token',
     'role',
     'ftech_role',
+    'ftech_user',
     'ftech_username',
     'ftech_avatar'
   ];
@@ -75,6 +76,17 @@
   const currentPage = window.location.pathname.split('/').pop().toLowerCase();
   const pathname = window.location.pathname.toLowerCase();
   const role = localStorage.getItem('ftech_role');
+  const currentUser = localStorage.getItem('ftech_user');
+
+  function enforceActiveAccount() {
+    if (!currentUser || !window.FTECHDB) return;
+    const account = window.FTECHDB.getAccount(currentUser);
+    if (!account || account.status === 'locked') {
+      alert('⚠️ Phiên đăng nhập đã bị vô hiệu hóa vì tài khoản bị khóa hoặc không còn tồn tại.');
+      clearAuthStorage();
+      window.location.href = getTargetUrl('login.html');
+    }
+  }
 
   const adminPages = ['dashboard.html', 'manage-accounts.html', 'manage-partners.html', 'manage-posts.html'];
   const contentPages = ['content-manager.html', 'postmanager.html'];
@@ -83,6 +95,8 @@
   const isAdminArea = adminPages.includes(currentPage) || pathname.includes('/admin/') || pathname.includes('/superadmin/');
   const isContentArea = contentPages.includes(currentPage) || pathname.includes('/contentmanager/');
   const isPartnerArea = partnerPages.includes(currentPage) || pathname.includes('/affiliatemanager/');
+
+  enforceActiveAccount();
 
   if (isAdminArea && role !== 'admin') {
     alert('⚠️ Khu vực hạn chế: Chỉ Super Admin mới có quyền truy cập trang này.');

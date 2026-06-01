@@ -1,17 +1,20 @@
 // --- DYNAMIC PRODUCT DETAIL LOGIC ---
 
-function partnerClick(name) {
-  // Track affiliate click in virtual database
-  const affiliates = window.FTECHDB.getAffiliates();
-  const aff = affiliates.find(a => a.partner.toLowerCase().includes(name.toLowerCase()));
-  if (aff) {
-    window.FTECHDB.incrementClicks(aff.id);
+let currentPostId = 'post-1';
+
+function partnerClick(linkId) {
+  const aff = window.FTECHDB.getAffiliate(linkId);
+  if (!aff) {
+    alert('Không tìm thấy liên kết affiliate cho đối tác này.');
+    return;
   }
-  alert("Điều hướng đến đối tác: " + name + ". Lượt click của liên kết đã được ghi nhận trong cơ sở dữ liệu hệ thống!");
+
+  const redirectPage = window.location.pathname.toLowerCase().endsWith('.html') ? 'redirect.html' : '/redirect.html';
+  window.location.href = `${redirectPage}?linkId=${encodeURIComponent(linkId)}&from=${encodeURIComponent(window.location.pathname + window.location.search)}`;
 }
 
 function renderComments() {
-  const comments = window.FTECHDB.getComments();
+  const comments = window.FTECHDB.getComments(currentPostId);
   const list = document.getElementById("commentList");
   if (!list) return;
   list.innerHTML = comments.map(c => `
@@ -38,6 +41,7 @@ function submitComment() {
   const currentUser = localStorage.getItem('ftech_username') || 'Nguyễn Minh Vỹ';
 
   const newComment = {
+    postId: currentPostId,
     name: currentUser,
     text: value
   };
@@ -50,8 +54,8 @@ function submitComment() {
 // Initial render & product query
 document.addEventListener('DOMContentLoaded', () => {
   const urlParams = new URLSearchParams(window.location.search);
-  const postId = urlParams.get('id') || 'post-1';
-  const post = window.FTECHDB.getPost(postId);
+  currentPostId = urlParams.get('id') || 'post-1';
+  const post = window.FTECHDB.getPost(currentPostId);
 
   if (post) {
     // 1. Update document title
@@ -82,8 +86,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // 5. Author row stats
     const statsEl = document.querySelector('.author-row .author-stats');
     if (statsEl) {
-      const commCount = window.FTECHDB.getComments().length;
-      const revCount = window.FTECHDB.getReviews().length;
+      const commCount = window.FTECHDB.getComments(currentPostId).length;
+      const revCount = window.FTECHDB.getReviews(currentPostId).length;
       statsEl.textContent = `${(post.views || 0).toLocaleString('vi-VN')} lượt xem · ${commCount} bình luận · ${revCount} đánh giá`;
     }
 
@@ -100,9 +104,9 @@ document.addEventListener('DOMContentLoaded', () => {
       specBody.innerHTML = `
         <tr><td>Sản phẩm</td><td>${post.title}</td></tr>
         <tr><td>Thương hiệu</td><td>${post.brand}</td></tr>
-        <tr><td>Giá ưu đãi</td><td><strong style="color: var(--red); font-size: 16px;">${post.price}</strong></td></tr>
-        <tr><td>Giá gốc</td><td><del>${post.old || ''}</del> ${post.discount || ''}</td></tr>
-        <tr><td>Đánh giá sao</td><td>${'⭐'.repeat(post.stars || 5)}</td></tr>
+        <tr><td>Giá ưu đãi</td><td><strong style="color: var(--red); font-size: 16px;">${window.FTECHDB.formatMoney(post.price)}</strong></td></tr>
+        <tr><td>Giá gốc</td><td><del>${post.oldPrice ? window.FTECHDB.formatMoney(post.oldPrice) : ''}</del> ${post.discount ? `-${post.discount}%` : ''}</td></tr>
+        <tr><td>Đánh giá sao</td><td>${'⭐'.repeat(Math.round(post.stars || 5))}</td></tr>
         <tr><td>Nổi bật</td><td>${post.label || 'new'}</td></tr>
         <tr><td>Cập nhật</td><td>${post.date}</td></tr>
       `;
@@ -124,18 +128,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // 9. Buy partners list from FTECHDB
     const partnersList = document.querySelector('.partner-list');
     if (partnersList) {
-      const activePartners = window.FTECHDB.getPartners().filter(p => p.status !== 'paused');
-      if (activePartners.length > 0) {
-        partnersList.innerHTML = activePartners.map(p => `
+      const activeAffiliates = window.FTECHDB.getAffiliates(currentPostId).filter(a => a.status === 'active');
+      if (activeAffiliates.length > 0) {
+        partnersList.innerHTML = activeAffiliates.map(aff => {
+          const partner = window.FTECHDB.getPartner(aff.partnerId) || { name: aff.partner, desc: 'Đối tác bán hàng uy tín' };
+          return `
           <div class="partner-item">
             <div>
-              <strong>${p.name}</strong>
-              <span>${p.desc || 'Hàng chính hãng · Trả góp 0% · Hỗ trợ tốt'}</span>
+              <strong>${partner.name}</strong>
+              <span>${partner.desc || aff.type || 'Hàng chính hãng · Trả góp 0% · Hỗ trợ tốt'}</span>
             </div>
-            <div class="partner-price">${post.price}</div>
-            <button class="partner-btn" onclick="partnerClick('${p.name}')">Đi đến nơi bán</button>
+            <div class="partner-price">${window.FTECHDB.formatMoney(post.price)}</div>
+            <button class="partner-btn" onclick="partnerClick('${aff.id}')">Đi đến nơi bán</button>
           </div>
-        `).join('');
+        `;
+        }).join('');
       }
     }
 
@@ -143,7 +150,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const scoreVal = document.querySelector('.score-value strong');
     if (scoreVal) scoreVal.textContent = (post.stars * 2.0).toFixed(1);
     const scoreStars = document.querySelector('.score-card .stars');
-    if (scoreStars) scoreStars.textContent = '⭐'.repeat(post.stars || 5);
+    if (scoreStars) scoreStars.textContent = '⭐'.repeat(Math.round(post.stars || 5));
+
+    document.querySelectorAll('a[href="reviewModule.html"]').forEach(link => {
+      link.href = `reviewModule.html?postId=${encodeURIComponent(currentPostId)}`;
+    });
   }
 
   // Load and render comments
