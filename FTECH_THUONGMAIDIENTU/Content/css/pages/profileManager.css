@@ -400,6 +400,7 @@
     }
     .status.processing { background: rgba(74,125,255,.12); color: var(--accent); }
     .status.done { background: rgba(27,207,138,.12); color: var(--green); }
+    .status.rejected { background: rgba(255,90,90,.12); color: var(--red); }
     .toggle-row {
       display: flex;
       align-items: center;

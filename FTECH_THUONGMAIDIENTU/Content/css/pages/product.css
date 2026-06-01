@@ -445,6 +445,25 @@
   font-size: 14px;
 }
 
+.comment-empty,
+.comment-notice {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--card2);
+  color: var(--body);
+  font-size: 13px;
+  line-height: 1.6;
+  padding: 12px 14px;
+}
+
+.comment-notice {
+  margin-top: 12px;
+  border-color: rgba(245,158,11,.24);
+  background: rgba(245,158,11,.08);
+  color: #8a5a00;
+  font-weight: 600;
+}
+
 .mini-list {
   display: grid;
   gap: 12px;
