@@ -400,6 +400,25 @@
     .tab.active { background: var(--accent); color: var(--black); border-color: var(--accent); }
     .tab:hover:not(.active) { border-color: rgba(0,217,245,.3); color: var(--text); }
     .main-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+    .product-empty {
+      grid-column: 1 / -1;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      text-align: center;
+      color: var(--body);
+    }
+    .product-empty strong {
+      display: block;
+      color: var(--text);
+      font-size: 16px;
+      margin-bottom: 6px;
+    }
+    .product-empty span {
+      display: block;
+      font-size: 13px;
+    }
 
     /* ── BLOG ── */
     .blog-wrap { max-width: 1280px; margin: 80px auto 0; padding: 0 32px; }
