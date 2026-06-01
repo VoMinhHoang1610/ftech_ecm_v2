@@ -6,7 +6,7 @@ let currentEditId = '';
 /* ── RENDER DYNAMIC POST ROWS ── */
 function renderPostRows(statusFilter = 'all') {
   const posts = window.FTECHDB.getPosts();
-  const currentAuthor = localStorage.getItem('ftech_username') || 'Trương Thị Kiều Nhi';
+  const currentAuthor = localStorage.getItem('ftech_user') || 'content';
   
   // Filter by author to simulate private creator workspace
   const myPosts = posts.filter(p => p.author === currentAuthor);

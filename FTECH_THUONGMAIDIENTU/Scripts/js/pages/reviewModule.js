@@ -1,5 +1,7 @@
 // Stars
 let mainStar = 0;
+const reviewParams = new URLSearchParams(window.location.search);
+const currentPostId = reviewParams.get('postId') || reviewParams.get('id') || 'post-1';
 const starLabels = ['', 'Rất tệ', 'Không hài lòng', 'Bình thường', 'Hài lòng', 'Tuyệt vời!'];
 
 function setMainStar(v) {
@@ -31,9 +33,13 @@ function addPhoto() {
 }
 
 function renderStats() {
-  const reviews = window.FTECHDB.getReviews();
+  const reviews = window.FTECHDB.getReviews(currentPostId);
   const total = reviews.length;
-  if (total === 0) return;
+  if (total === 0) {
+    document.querySelector('.rs-big-num').textContent = '0.0';
+    document.querySelector('.rs-total').textContent = '0 đánh giá';
+    return;
+  }
 
   // Average
   const avg = (reviews.reduce((sum, r) => sum + r.stars, 0) / total).toFixed(1);
@@ -84,14 +90,17 @@ function renderStats() {
   });
 }
 
-function renderReviews() {
-  const reviews = window.FTECHDB.getReviews();
+function getSafeAvatar(avatar) {
+  return String(avatar || '👤');
+}
+
+function renderReviewList(reviews) {
   document.getElementById('reviewsList').innerHTML = reviews.map(r => `
     <div class="rv-card">
       <div class="rv-top">
         <div class="rv-user">
           <div class="rv-avatar">
-            ${r.avatar.startsWith('http') ? `<img src="${r.avatar}" alt="${r.name}">` : `<div style="font-size:24px;width:36px;height:36px;display:grid;place-items:center;background:#eef;border-radius:50%;">${r.avatar}</div>`}
+            ${getSafeAvatar(r.avatar).startsWith('http') ? `<img src="${r.avatar}" alt="${r.name}">` : `<div style="font-size:24px;width:36px;height:36px;display:grid;place-items:center;background:#eef;border-radius:50%;">${getSafeAvatar(r.avatar)}</div>`}
           </div>
           <div>
             <div class="rv-name">${r.name}</div>
@@ -101,16 +110,16 @@ function renderReviews() {
         </div>
         <div class="rv-right">
           ${r.verified ? '<span class="rv-verified">✓ Đã duyệt</span>' : ''}
-          <span class="rv-stars-row">${'⭐'.repeat(r.stars)}</span>
+          <span class="rv-stars-row">${'⭐'.repeat(Math.round(r.stars))}</span>
           <span class="rv-score">${r.stars.toFixed(1)}</span>
         </div>
       </div>
       ${r.criteria ? `
         <div class="rv-criteria">
-          <div class="rv-crit">Hiệu năng<span>${'⭐'.repeat(r.criteria.perf)}</span></div>
-          <div class="rv-crit">Build<span>${'⭐'.repeat(r.criteria.build)}</span></div>
-          <div class="rv-crit">Giá trị<span>${'⭐'.repeat(r.criteria.value)}</span></div>
-          <div class="rv-crit">Dịch vụ<span>${'⭐'.repeat(r.criteria.service)}</span></div>
+          <div class="rv-crit">Hiệu năng<span>${'⭐'.repeat(Math.round(r.criteria.perf))}</span></div>
+          <div class="rv-crit">Build<span>${'⭐'.repeat(Math.round(r.criteria.build))}</span></div>
+          <div class="rv-crit">Giá trị<span>${'⭐'.repeat(Math.round(r.criteria.value))}</span></div>
+          <div class="rv-crit">Dịch vụ<span>${'⭐'.repeat(Math.round(r.criteria.service))}</span></div>
         </div>` : ''}
       <div class="rv-title">${r.title || 'Đánh giá sản phẩm'}</div>
       <div class="rv-text">${r.text}</div>
@@ -133,6 +142,10 @@ function renderReviews() {
     </div>`).join('');
 }
 
+function renderReviews() {
+  renderReviewList(window.FTECHDB.getReviews(currentPostId));
+}
+
 function submitReview() {
   if (mainStar === 0) { alert('Vui lòng chọn số sao đánh giá.'); return; }
   const textVal = document.getElementById('rvText').value.trim();
@@ -142,13 +155,14 @@ function submitReview() {
   const currentAvatar = localStorage.getItem('ftech_avatar') || '👨';
 
   const newReview = {
+    postId: currentPostId,
     name: currentUser,
     avatar: currentAvatar,
     stars: mainStar,
     title: document.getElementById('rvTitle').value.trim() || 'Nhận xét',
     text: textVal,
     hasPhotos: photoCount > 0,
-    verified: true,
+    verified: window.FTECHDB.hasValidClickForUser(currentPostId, localStorage.getItem('ftech_user') || 'customer'),
     criteria: { ...miniCriteria }
   };
 
@@ -194,7 +208,7 @@ function vote(btn, id, dir) {
 function filterTab(btn, val) {
   document.querySelectorAll('.ftab').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  const reviews = window.FTECHDB.getReviews();
+  const reviews = window.FTECHDB.getReviews(currentPostId);
   let filtered = reviews;
   if (val === '5' || val === '4' || val === '3') {
     filtered = reviews.filter(r => r.stars === parseInt(val));
@@ -204,31 +218,7 @@ function filterTab(btn, val) {
     filtered = reviews.filter(r => r.verified);
   }
   
-  // Re-render list
-  document.getElementById('reviewsList').innerHTML = filtered.map(r => `
-    <div class="rv-card">
-      <div class="rv-top">
-        <div class="rv-user">
-          <div class="rv-avatar">
-            ${r.avatar.startsWith('http') ? `<img src="${r.avatar}" alt="${r.name}">` : `<div style="font-size:24px;width:36px;height:36px;display:grid;place-items:center;background:#eef;border-radius:50%;">${r.avatar}</div>`}
-          </div>
-          <div>
-            <div class="rv-name">${r.name}</div>
-            <div class="rv-meta">${r.date} · Đã mua qua Shopee/Lazada</div>
-          </div>
-        </div>
-        <div class="rv-right">
-          <span class="rv-stars-row">${'⭐'.repeat(r.stars)}</span>
-          <span class="rv-score">${r.stars.toFixed(1)}</span>
-        </div>
-      </div>
-      <div class="rv-title">${r.title || 'Đánh giá sản phẩm'}</div>
-      <div class="rv-text">${r.text}</div>
-      <div class="rv-actions">
-        <span class="rv-helpful">Hữu ích không?</span>
-        <button class="rv-helpful-btn" onclick="vote(this,${r.id},'up')">👍 Có (${r.helpful})</button>
-      </div>
-    </div>`).join('');
+  renderReviewList(filtered);
 }
 
 function filterByStar(n) {
@@ -239,12 +229,12 @@ function filterByStar(n) {
 }
 
 function sortReviews(v) {
-  const reviews = window.FTECHDB.getReviews();
+  const reviews = window.FTECHDB.getReviews(currentPostId);
   if (v === 'newest') reviews.sort((a,b) => b.id - a.id);
   else if (v === 'helpful') reviews.sort((a,b) => b.helpful - a.helpful);
   else if (v === 'highest') reviews.sort((a,b) => b.stars - a.stars);
   else if (v === 'lowest') reviews.sort((a,b) => a.stars - b.stars);
-  renderReviews();
+  renderReviewList(reviews);
 }
 
 function loadMoreReviews() {
@@ -253,6 +243,23 @@ function loadMoreReviews() {
 
 // Initial nạp
 document.addEventListener('DOMContentLoaded', () => {
+  const post = window.FTECHDB.getPost(currentPostId);
+  if (post) {
+    const productName = document.querySelector('.pm-name');
+    const productBrand = document.querySelector('.pm-brand');
+    const productPrice = document.querySelector('.pm-price');
+    const productScore = document.querySelector('.pm-score');
+    const productBack = document.querySelector('.pm-link');
+    const productImg = document.querySelector('.pm-img img');
+
+    if (productName) productName.textContent = post.title;
+    if (productBrand) productBrand.textContent = post.brand || 'FTECH';
+    if (productPrice) productPrice.textContent = window.FTECHDB.formatMoney(post.price);
+    if (productScore) productScore.innerHTML = `<span class="pm-stars">${'⭐'.repeat(Math.round(post.stars || 5))}</span><strong>${Number(post.stars || 0).toFixed(1)}</strong><span>· ${window.FTECHDB.getReviews(currentPostId).length} đánh giá · đồng bộ từ bài review</span>`;
+    if (productBack) productBack.href = `product.html?id=${encodeURIComponent(currentPostId)}`;
+    if (productImg && post.image) productImg.src = post.image;
+  }
+
   renderReviews();
   renderStats();
 });

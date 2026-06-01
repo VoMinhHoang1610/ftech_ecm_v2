@@ -243,6 +243,11 @@ document.addEventListener('DOMContentLoaded', function () {
   // Render everything: statistics, filter chips count, and the posts table rows
   function renderAll() {
     const posts = FTECHDB.getPosts();
+    const accounts = FTECHDB.getAccounts();
+    const authorName = username => {
+      const account = accounts.find(a => a.username === username || a.name === username);
+      return account ? account.name : username;
+    };
 
     // 1. Calculate and update KPI Stats
     const totalCount = posts.length;
@@ -289,12 +294,12 @@ document.addEventListener('DOMContentLoaded', function () {
       if (filterCategory && p.category !== filterCategory) return false;
 
       // Author filter
-      if (filterAuthor && p.author !== filterAuthor) return false;
+      if (filterAuthor && p.author !== filterAuthor && authorName(p.author) !== filterAuthor) return false;
 
       // Search query
       if (searchQuery) {
         const titleMatch = p.title.toLowerCase().includes(searchQuery);
-        const authorMatch = p.author.toLowerCase().includes(searchQuery);
+        const authorMatch = `${p.author} ${authorName(p.author)}`.toLowerCase().includes(searchQuery);
         const catMatch = p.category.toLowerCase().includes(searchQuery);
         if (!titleMatch && !authorMatch && !catMatch) return false;
       }
@@ -384,7 +389,7 @@ document.addEventListener('DOMContentLoaded', function () {
               <div class="post-meta">${metaText}</div>
             </div>
           </div>
-          <div class="u-style-064">${post.author}</div>
+          <div class="u-style-064">${authorName(post.author)}</div>
           <div><span class="cat-tag">${post.category}</span></div>
           <div><span class="sp ${statusClass}">${statusLabel}</span></div>
           <div class="metric">${viewsDisplay}</div>

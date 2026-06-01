@@ -1,10 +1,60 @@
 (function () {
-  // --- DEFAULT SEED DATA ---
+  const STORAGE_KEYS = {
+    accounts: 'ftech_accounts',
+    posts: 'ftech_posts',
+    reviews: 'ftech_reviews',
+    comments: 'ftech_comments',
+    partners: 'ftech_partners',
+    affiliates: 'ftech_affiliates',
+    clickLogs: 'ftech_click_logs',
+    commissionLogs: 'ftech_commission_logs'
+  };
+
   const DEFAULT_ACCOUNTS = [
-    { username: 'admin', password: '123', role: 'admin', name: 'Nguyễn Minh Vỹ', avatar: '⚙️' },
-    { username: 'content', password: '123', role: 'content', name: 'Trương Thị Kiều Nhi', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&q=80' },
-    { username: 'partner', password: '123', role: 'partner', name: 'Võ Minh Hoàng', avatar: '🤝' },
-    { username: 'customer', password: '123', role: 'customer', name: 'Nguyễn Minh Vỹ', avatar: '👨' }
+    {
+      username: 'admin',
+      password: '123',
+      passwordHash: btoa('123'),
+      role: 'admin',
+      name: 'Nguyễn Minh Vỹ',
+      email: 'admin@ftech.vn',
+      avatar: '⚙️',
+      status: 'active',
+      createdAt: '01/03/2026'
+    },
+    {
+      username: 'content',
+      password: '123',
+      passwordHash: btoa('123'),
+      role: 'content',
+      name: 'Trương Thị Kiều Nhi',
+      email: 'content@ftech.vn',
+      avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&q=80',
+      status: 'active',
+      createdAt: '01/03/2026'
+    },
+    {
+      username: 'partner',
+      password: '123',
+      passwordHash: btoa('123'),
+      role: 'partner',
+      name: 'Võ Minh Hoàng',
+      email: 'partner@ftech.vn',
+      avatar: '🤝',
+      status: 'active',
+      createdAt: '01/03/2026'
+    },
+    {
+      username: 'customer',
+      password: '123',
+      passwordHash: btoa('123'),
+      role: 'customer',
+      name: 'Nguyễn Minh Vỹ',
+      email: 'customer@ftech.vn',
+      avatar: '👨',
+      status: 'active',
+      createdAt: '01/03/2026'
+    }
   ];
 
   const DEFAULT_POSTS = [
@@ -15,17 +65,17 @@
       status: 'approved',
       views: 12400,
       date: '14/03/2026',
-      author: 'Trương Thị Kiều Nhi',
+      author: 'content',
       excerpt: 'Sau 3 tháng trải nghiệm thực tế với công việc đồ hoạ nặng, chúng tôi tổng hợp đánh giá toàn diện về iPhone 16 Pro Max...',
       content: 'Nội dung chi tiết review sản phẩm iPhone 16 Pro Max với camera đột phá, hiệu năng chip A18 Pro mạnh mẽ và thời lượng pin được cải thiện rõ rệt so với đời trước.',
       image: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=900&q=80',
       brand: 'Apple',
-      price: '34.990.000₫',
-      old: '39.900.000₫',
-      discount: '-12%',
+      price: 34990000,
+      oldPrice: 39900000,
+      discount: 12,
       label: 'new',
-      stars: 5,
-      reviews: 1240
+      stars: 4.8,
+      reviews: 3
     },
     {
       id: 'post-2',
@@ -34,17 +84,17 @@
       status: 'approved',
       views: 8100,
       date: '10/03/2026',
-      author: 'Trương Thị Kiều Nhi',
+      author: 'content',
       excerpt: 'Nên chọn tai nghe in-ear chống ồn tốt của Apple hay mẫu chụp tai đẳng cấp của Sony ở tầm giá này?',
       content: 'Bài viết phân tích ưu nhược điểm của hai đối thủ nặng ký trong thế giới âm thanh chống ồn di động cao cấp.',
       image: 'https://images.unsplash.com/photo-1546435770-a3e426bf472b?auto=format&fit=crop&w=900&q=80',
       brand: 'Apple',
-      price: '6.490.000₫',
-      old: null,
+      price: 6490000,
+      oldPrice: null,
       discount: null,
       label: 'new',
       stars: 5,
-      reviews: 920
+      reviews: 0
     },
     {
       id: 'post-3',
@@ -53,17 +103,17 @@
       status: 'pending',
       views: 0,
       date: '18/03/2026',
-      author: 'Trương Thị Kiều Nhi',
+      author: 'content',
       excerpt: 'Danh sách 5 mẫu laptop gaming cấu hình cực mạnh, tản mát, giá dưới 30 triệu đáng cân nhắc.',
       content: 'Tổng hợp danh sách các laptop gaming từ Asus, Acer, MSI, Lenovo có hiệu năng tản nhiệt tốt nhất và giá trị sử dụng cao.',
       image: 'https://images.unsplash.com/photo-1593642702821-c8da6771f0c6?auto=format&fit=crop&w=900&q=80',
       brand: 'Asus',
-      price: '28.990.000₫',
-      old: '31.500.000₫',
-      discount: '-8%',
+      price: 28990000,
+      oldPrice: 31500000,
+      discount: 8,
       label: 'sale',
       stars: 4,
-      reviews: 380
+      reviews: 0
     },
     {
       id: 'post-4',
@@ -72,17 +122,17 @@
       status: 'pending',
       views: 0,
       date: '19/03/2026',
-      author: 'Trương Thị Kiều Nhi',
+      author: 'content',
       excerpt: 'Đánh giá chi tiết mẫu đồng hồ mới của Apple với thiết kế mỏng hơn và màn hình rộng hơn.',
       content: 'Nội dung phân tích các cảm biến sức khỏe mới và công nghệ sạc siêu nhanh của Apple Watch Series 10.',
       image: 'https://images.unsplash.com/photo-1579586337278-3befd40fd17a?auto=format&fit=crop&w=900&q=80',
       brand: 'Apple',
-      price: '10.990.000₫',
-      old: null,
+      price: 10990000,
+      oldPrice: null,
       discount: null,
       label: 'new',
       stars: 5,
-      reviews: 160
+      reviews: 0
     },
     {
       id: 'post-5',
@@ -91,17 +141,17 @@
       status: 'draft',
       views: 0,
       date: '21/03/2026',
-      author: 'Trương Thị Kiều Nhi',
+      author: 'content',
       excerpt: 'Cách lựa chọn tai nghe gaming có âm trường tốt, độ trễ thấp và micro đàm thoại rõ nét.',
       content: 'Hướng dẫn từ A đến Z giúp game thủ lựa chọn dòng tai nghe có dây và không dây phù hợp nhất cho nhu cầu bắn súng FPS và chơi game AAA.',
       image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=900&q=80',
       brand: 'Sony',
-      price: '3.490.000₫',
-      old: null,
+      price: 3490000,
+      oldPrice: null,
       discount: null,
       label: 'new',
       stars: 5,
-      reviews: 120
+      reviews: 0
     },
     {
       id: 'post-6',
@@ -110,17 +160,17 @@
       status: 'draft',
       views: 0,
       date: '25/03/2026',
-      author: 'Trương Thị Kiều Nhi',
+      author: 'content',
       excerpt: 'Đối chiếu hai mẫu laptop Ultrabook mỏng nhẹ, pin trâu và màn hình xuất sắc nhất năm 2026.',
       content: 'So sánh hiệu năng chip M3 và Intel Core Ultra 7 trên hai đối thủ nặng ký nhất của dòng laptop siêu di động.',
       image: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=900&q=80',
       brand: 'Dell',
-      price: '38.990.000₫',
-      old: '42.000.000₫',
-      discount: '-7%',
+      price: 38990000,
+      oldPrice: 42000000,
+      discount: 7,
       label: 'sale',
       stars: 4,
-      reviews: 240
+      reviews: 0
     },
     {
       id: 'post-7',
@@ -129,17 +179,17 @@
       status: 'rejected',
       views: 0,
       date: '17/03/2026',
-      author: 'Trương Thị Kiều Nhi',
+      author: 'content',
       excerpt: 'Cấu hình PC gaming lắp ráp giá cực rẻ nhưng cân tốt mọi game eSports và văn phòng.',
       content: 'Nội dung hướng dẫn lựa chọn linh kiện cũ và mới để xây dựng một dàn máy tính bàn giá cực tiết kiệm mà vẫn chiến mượt Valorant, Liên Minh Huyền Thoại.',
       image: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=900&q=80',
       brand: 'Custom PC',
-      price: '14.500.000₫',
-      old: '16.000.000₫',
-      discount: '-9%',
+      price: 14500000,
+      oldPrice: 16000000,
+      discount: 9,
       label: 'sale',
       stars: 5,
-      reviews: 80,
+      reviews: 0,
       rejectReason: 'Lý do từ chối: nội dung chưa đầy đủ, thiếu affiliate link — cần chỉnh sửa và gửi lại'
     }
   ];
@@ -147,13 +197,14 @@
   const DEFAULT_REVIEWS = [
     {
       id: 1,
+      postId: 'post-1',
       name: 'Nguyễn Tuấn Anh',
       avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=120&q=80',
       date: '12/03/2026',
       stars: 5,
       score: 5,
       title: 'Pin 18 giờ thật sự ấn tượng!',
-      text: 'Dùng cả ngày làm việc 10 tiếng vẫn còn 30% pin. Máy mỏng nhẹ, build chắc chắn và phù hợp với học tập, văn phòng. Mình thấy nội dung review của FTECH khá sát trải nghiệm thực tế.',
+      text: 'Dùng cả ngày làm việc 10 tiếng vẫn còn 30% pin. Máy mỏng nhẹ, build chắc chắn và phù hợp với học tập, văn phòng.',
       helpful: 47,
       hasPhotos: true,
       verified: true,
@@ -161,13 +212,14 @@
     },
     {
       id: 2,
+      postId: 'post-1',
       name: 'Trương Thị Kiều Nhi',
       avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&q=80',
       date: '08/03/2026',
       stars: 5,
       score: 5,
       title: 'Phù hợp cho học tập và thiết kế nhẹ',
-      text: 'Mình dùng Figma và Photoshop cơ bản thấy rất ổn. Máy nhẹ, pin tốt và màn hình đẹp. Điểm trừ là cần thêm hub nếu dùng nhiều thiết bị ngoại vi.',
+      text: 'Mình dùng Figma và Photoshop cơ bản thấy rất ổn. Máy nhẹ, pin tốt và màn hình đẹp.',
       helpful: 31,
       hasPhotos: true,
       verified: true,
@@ -175,13 +227,14 @@
     },
     {
       id: 3,
+      postId: 'post-1',
       name: 'Phạm Thái Bảo',
       avatar: 'https://images.unsplash.com/photo-1504257432389-52343af06ae3?auto=format&fit=crop&w=120&q=80',
       date: '02/03/2026',
       stars: 4,
       score: 4.2,
       title: 'Tốt nhưng nên lên 16GB RAM nếu làm dev',
-      text: 'Máy chạy nhanh và rất yên tĩnh. Tuy nhiên nếu dùng Docker, IntelliJ hoặc workflow nặng hơn thì mình nghĩ nên chọn bản 16GB để thoải mái hơn.',
+      text: 'Máy chạy nhanh và rất yên tĩnh. Nếu dùng workflow nặng hơn thì nên chọn bản RAM cao hơn.',
       helpful: 18,
       hasPhotos: false,
       verified: true,
@@ -190,244 +243,426 @@
   ];
 
   const DEFAULT_COMMENTS = [
-    {
-      id: 1,
-      name: 'Lê Hoàng Nam',
-      date: '20/03/2026',
-      text: 'Bài viết rất rõ ở phần hiệu năng. Nếu được, mình muốn có thêm so sánh giữa bản 8GB và 16GB cho người làm lập trình.'
-    },
-    {
-      id: 2,
-      name: 'FTECH Review Team',
-      date: '20/03/2026',
-      text: 'Bọn mình sẽ bổ sung phần này ở bản cập nhật tiếp theo. Hiện tại nếu bạn code thường xuyên với Docker hoặc nhiều service nền, nên ưu tiên bản 16GB.'
-    }
+    { id: 1, postId: 'post-1', name: 'Lê Hoàng Nam', date: '20/03/2026', text: 'Bài viết rất rõ ở phần hiệu năng. Nếu được, mình muốn có thêm so sánh giữa bản 8GB và 16GB cho người làm lập trình.' },
+    { id: 2, postId: 'post-1', name: 'FTECH Review Team', date: '20/03/2026', text: 'Bọn mình sẽ bổ sung phần này ở bản cập nhật tiếp theo.' }
   ];
 
   const DEFAULT_PARTNERS = [
-    { name: 'CellphoneS', desc: 'Đề xuất · Hàng chính hãng · Trả góp 0%', logo: '📱', active: true },
-    { name: 'Thế Giới Di Động', desc: 'Chuỗi lớn · Dễ trải nghiệm máy · Hỗ trợ tốt', logo: '🛒', active: true },
-    { name: 'Shopee Mall - Apple Store', desc: 'Campaign linh hoạt · Deal tốt săn voucher', logo: '📦', active: true },
-    { name: 'Lazada Partner', desc: 'Campaign ngày đôi · Miễn phí vận chuyển', logo: '📘', active: true },
-    { name: 'Tiki Trading', desc: 'Hàng chính hãng 100% · Giao siêu nhanh', logo: '🚀', active: true }
+    { id: 'partner-cellphones', name: 'CellphoneS', desc: 'Đề xuất · Hàng chính hãng · Trả góp 0%', logo: '📱', active: true, status: 'active', commissionRate: 0.03, clicks: 1420, category: 'Điện tử' },
+    { id: 'partner-tgdd', name: 'Thế Giới Di Động', desc: 'Chuỗi lớn · Dễ trải nghiệm máy · Hỗ trợ tốt', logo: '🛒', active: true, status: 'active', commissionRate: 0.025, clicks: 2840, category: 'Điện tử' },
+    { id: 'partner-shopee', name: 'Shopee Affiliate', desc: 'Campaign linh hoạt · Deal tốt săn voucher', logo: '📦', active: true, status: 'active', commissionRate: 0.04, clicks: 4820, category: 'TMĐT' },
+    { id: 'partner-lazada', name: 'Lazada Partner', desc: 'Campaign ngày đôi · Miễn phí vận chuyển', logo: '📘', active: true, status: 'active', commissionRate: 0.035, clicks: 1950, category: 'TMĐT' },
+    { id: 'partner-tiki', name: 'Tiki Trading', desc: 'Hàng chính hãng 100% · Giao siêu nhanh', logo: '🚀', active: false, status: 'paused', commissionRate: 0.02, clicks: 890, category: 'TMĐT' }
   ];
 
   const DEFAULT_AFFILIATES = [
-    { id: 'aff-1', partner: 'Shopee Affiliate', type: 'Link mua chính', url: 'https://shopee.vn/product/ftech-iphone16-promax', clicks: 284 },
-    { id: 'aff-2', partner: 'Lazada Partner', type: 'Link so sánh giá', url: 'https://lazada.vn/products/apple-iphone-16-pro-max', clicks: 195 }
+    { id: 'aff-1', postId: 'post-1', partnerId: 'partner-shopee', partner: 'Shopee Affiliate', type: 'Link mua chính', url: 'https://shopee.vn/product/ftech-iphone16-promax', clicks: 284, status: 'active', name: 'iPhone 16 Pro Max - Shopee', attachedPost: 'Review iPhone 16 Pro Max: Đáng mua không năm 2026?', date: '21/03/2026', commission: '4%', cvr: '6.8%' },
+    { id: 'aff-2', postId: 'post-1', partnerId: 'partner-lazada', partner: 'Lazada Partner', type: 'Link so sánh giá', url: 'https://lazada.vn/products/apple-iphone-16-pro-max', clicks: 195, status: 'active', name: 'iPhone 16 Pro Max - Lazada', attachedPost: 'Review iPhone 16 Pro Max: Đáng mua không năm 2026?', date: '21/03/2026', commission: '3.5%', cvr: '5.2%' },
+    { id: 'aff-3', postId: 'post-2', partnerId: 'partner-tiki', partner: 'Tiki Trading', type: 'Link lỗi', url: 'https://tiki.vn/go/sony-xm5-404-error', clicks: 320, status: 'error', name: 'Sony WH-1000XM5 - Tiki', attachedPost: 'So sánh AirPods Pro 2 vs Sony WH-1000XM5: Chọn cái nào?', date: '02/03/2026', commission: '2%', cvr: '0%' },
+    { id: 'aff-4', postId: 'post-2', partnerId: 'partner-shopee', partner: 'Shopee Affiliate', type: 'Link mua chính', url: 'https://shopee.vn/product/airpods-pro-2', clicks: 654, status: 'active', name: 'AirPods Pro 2 - Shopee', attachedPost: 'So sánh AirPods Pro 2 vs Sony WH-1000XM5: Chọn cái nào?', date: '16/03/2026', commission: '4%', cvr: '5.8%' }
   ];
 
-  // --- DB ENGINE INITIALIZER ---
-  function initDB() {
-    if (!localStorage.getItem('ftech_accounts')) {
-      localStorage.setItem('ftech_accounts', JSON.stringify(DEFAULT_ACCOUNTS));
-    } else {
-      // Ensure that the ready-made demo accounts always exist with password '123'
-      const accounts = JSON.parse(localStorage.getItem('ftech_accounts')) || [];
-      DEFAULT_ACCOUNTS.forEach(da => {
-        const index = accounts.findIndex(a => a.username === da.username);
-        if (index === -1) {
-          accounts.push(da);
-        } else {
-          // Keep demo credentials active
-          accounts[index].password = da.password;
-          accounts[index].role = da.role;
-          accounts[index].name = da.name;
-          if (!accounts[index].avatar) accounts[index].avatar = da.avatar;
-          if (!accounts[index].status) accounts[index].status = 'active';
-        }
-      });
-      localStorage.setItem('ftech_accounts', JSON.stringify(accounts));
-    }
-    if (!localStorage.getItem('ftech_posts')) {
-      localStorage.setItem('ftech_posts', JSON.stringify(DEFAULT_POSTS));
-    }
-    if (!localStorage.getItem('ftech_reviews')) {
-      localStorage.setItem('ftech_reviews', JSON.stringify(DEFAULT_REVIEWS));
-    }
-    if (!localStorage.getItem('ftech_comments')) {
-      localStorage.setItem('ftech_comments', JSON.stringify(DEFAULT_COMMENTS));
-    }
-    if (!localStorage.getItem('ftech_partners')) {
-      localStorage.setItem('ftech_partners', JSON.stringify(DEFAULT_PARTNERS));
-    }
-    if (!localStorage.getItem('ftech_affiliates')) {
-      localStorage.setItem('ftech_affiliates', JSON.stringify(DEFAULT_AFFILIATES));
+  function read(key, fallback = []) {
+    try {
+      return JSON.parse(localStorage.getItem(key)) || fallback;
+    } catch (error) {
+      return fallback;
     }
   }
+
+  function write(key, value) {
+    localStorage.setItem(key, JSON.stringify(value));
+  }
+
+  function toSlugId(prefix, text) {
+    return `${prefix}-${String(text || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || Date.now()}`;
+  }
+
+  function parseMoney(value) {
+    if (typeof value === 'number') return value;
+    if (!value) return 0;
+    return Number(String(value).replace(/[^\d]/g, '')) || 0;
+  }
+
+  function formatMoney(value) {
+    const amount = Number(value) || 0;
+    return `${amount.toLocaleString('vi-VN')}₫`;
+  }
+
+  function normalizeAccount(account) {
+    const fallback = DEFAULT_ACCOUNTS.find(a => a.username === account.username) || {};
+    const password = account.password || fallback.password || '123';
+    return {
+      ...fallback,
+      ...account,
+      password,
+      passwordHash: account.passwordHash || btoa(password),
+      email: account.email || fallback.email || `${account.username}@ftech.vn`,
+      status: account.status || 'active',
+      createdAt: account.createdAt || account.date || '01/03/2026'
+    };
+  }
+
+  function normalizePost(post) {
+    const authorMap = {
+      'Trương Thị Kiều Nhi': 'content',
+      'Võ Minh Hoàng': 'partner',
+      'Nguyễn Minh Vỹ': 'customer',
+      'Super Admin': 'admin'
+    };
+    const normalized = {
+      ...post,
+      author: authorMap[post.author] || post.author || 'content',
+      price: parseMoney(post.price),
+      oldPrice: parseMoney(post.oldPrice || post.old) || null,
+      discount: post.discount ? Number(String(post.discount).replace(/[^\d]/g, '')) || post.discount : null
+    };
+    normalized.priceText = formatMoney(normalized.price);
+    normalized.old = normalized.oldPrice ? formatMoney(normalized.oldPrice) : null;
+    return normalized;
+  }
+
+  function normalizePartner(partner) {
+    const seed = DEFAULT_PARTNERS.find(p => p.name === partner.name || p.id === partner.id) || {};
+    const id = partner.id || seed.id || toSlugId('partner', partner.name);
+    const commissionRate = Number(partner.commissionRate) || Number(String(partner.commission || '').match(/\d+(\.\d+)?/)?.[0]) / 100 || seed.commissionRate || 0.03;
+    return {
+      ...seed,
+      ...partner,
+      id,
+      active: partner.active !== undefined ? partner.active : partner.status !== 'paused' && partner.status !== 'rejected',
+      status: partner.status || (partner.active === false ? 'paused' : 'active'),
+      commissionRate,
+      commission: partner.commission || `${(commissionRate * 100).toFixed(1).replace('.0', '')}%`
+    };
+  }
+
+  function getPartnerIdByName(name) {
+    const partners = read(STORAGE_KEYS.partners, DEFAULT_PARTNERS.map(normalizePartner));
+    const partner = partners.find(p => p.name === name || p.name.toLowerCase().includes(String(name || '').toLowerCase()));
+    return partner ? partner.id : '';
+  }
+
+  function getPostIdByTitle(title) {
+    const posts = read(STORAGE_KEYS.posts, DEFAULT_POSTS.map(normalizePost));
+    const post = posts.find(p => p.title === title || String(title || '').includes(p.title) || p.title.includes(String(title || '')));
+    return post ? post.id : 'post-1';
+  }
+
+  function normalizeAffiliate(affiliate) {
+    const partnerId = affiliate.partnerId || getPartnerIdByName(affiliate.partner);
+    const postId = affiliate.postId || getPostIdByTitle(affiliate.attachedPost);
+    const partner = read(STORAGE_KEYS.partners, []).find(p => p.id === partnerId);
+    const post = read(STORAGE_KEYS.posts, []).find(p => p.id === postId);
+    return {
+      ...affiliate,
+      id: affiliate.id || `aff-${Date.now()}`,
+      postId,
+      partnerId,
+      partner: affiliate.partner || (partner && partner.name) || 'Shopee Affiliate',
+      attachedPost: affiliate.attachedPost || (post && post.title) || '',
+      clicks: Number(affiliate.clicks) || 0,
+      status: affiliate.status || 'active'
+    };
+  }
+
+  function initCollection(key, seed, normalizer) {
+    const current = read(key, null);
+    const base = current && current.length ? current : seed;
+    write(key, base.map(normalizer));
+  }
+
+  function seedClickLogsFromAffiliates() {
+    const logs = read(STORAGE_KEYS.clickLogs, []);
+    if (logs.length) return;
+    const affiliates = read(STORAGE_KEYS.affiliates, []);
+    const seeded = [];
+    affiliates.forEach(affiliate => {
+      const safeCount = Math.min(Number(affiliate.clicks) || 0, 8);
+      for (let index = 0; index < safeCount; index++) {
+        seeded.push({
+          id: `click-seed-${affiliate.id}-${index + 1}`,
+          linkId: affiliate.id,
+          partnerId: affiliate.partnerId,
+          postId: affiliate.postId,
+          timestamp: new Date(Date.now() - (index + 1) * 3600000).toISOString(),
+          ipAddress: `10.0.0.${index + 10}`,
+          status: 'valid'
+        });
+      }
+    });
+    write(STORAGE_KEYS.clickLogs, seeded);
+  }
+
+  function initDB() {
+    initCollection(STORAGE_KEYS.accounts, DEFAULT_ACCOUNTS, normalizeAccount);
+    const accounts = read(STORAGE_KEYS.accounts, []);
+    DEFAULT_ACCOUNTS.forEach(seedAccount => {
+      const index = accounts.findIndex(account => account.username === seedAccount.username);
+      if (index >= 0) accounts[index] = normalizeAccount({ ...accounts[index], password: '123', passwordHash: btoa('123') });
+      else accounts.push(normalizeAccount(seedAccount));
+    });
+    write(STORAGE_KEYS.accounts, accounts);
+
+    initCollection(STORAGE_KEYS.posts, DEFAULT_POSTS, normalizePost);
+    initCollection(STORAGE_KEYS.reviews, DEFAULT_REVIEWS, review => ({ postId: 'post-1', helpful: 0, ...review }));
+    initCollection(STORAGE_KEYS.comments, DEFAULT_COMMENTS, comment => ({ postId: 'post-1', ...comment }));
+    initCollection(STORAGE_KEYS.partners, DEFAULT_PARTNERS, normalizePartner);
+    initCollection(STORAGE_KEYS.affiliates, DEFAULT_AFFILIATES, normalizeAffiliate);
+    if (!localStorage.getItem(STORAGE_KEYS.commissionLogs)) write(STORAGE_KEYS.commissionLogs, []);
+    seedClickLogsFromAffiliates();
+  }
+
   initDB();
 
-  // --- API DEFINITIONS ---
   const db = {
-    // --- ACCOUNTS ---
+    formatMoney,
+    parseMoney,
+
     getAccounts() {
-      return JSON.parse(localStorage.getItem('ftech_accounts')) || [];
+      return read(STORAGE_KEYS.accounts).map(normalizeAccount);
     },
     getAccount(identifier) {
       if (!identifier) return null;
-      return this.getAccounts().find(a => 
+      return this.getAccounts().find(a =>
         (a.username && a.username.toLowerCase() === identifier.toLowerCase()) ||
         (a.email && a.email.toLowerCase() === identifier.toLowerCase())
       );
     },
     saveAccount(account) {
+      const normalized = normalizeAccount(account);
       const accounts = this.getAccounts();
-      const index = accounts.findIndex(a => a.username === account.username);
-      if (index >= 0) {
-        accounts[index] = { ...accounts[index], ...account };
-      } else {
-        accounts.push(account);
-      }
-      localStorage.setItem('ftech_accounts', JSON.stringify(accounts));
-      return account;
+      const index = accounts.findIndex(a => a.username === normalized.username);
+      if (index >= 0) accounts[index] = { ...accounts[index], ...normalized };
+      else accounts.push(normalized);
+      write(STORAGE_KEYS.accounts, accounts);
+      return normalized;
     },
     deleteAccount(username) {
-      const accounts = this.getAccounts().filter(a => a.username !== username);
-      localStorage.setItem('ftech_accounts', JSON.stringify(accounts));
+      write(STORAGE_KEYS.accounts, this.getAccounts().filter(a => a.username !== username));
     },
 
-    // --- POSTS (ARTICLES) ---
     getPosts() {
-      return JSON.parse(localStorage.getItem('ftech_posts')) || [];
+      return read(STORAGE_KEYS.posts).map(normalizePost);
     },
     getPost(id) {
       return this.getPosts().find(p => p.id === id);
     },
     savePost(post) {
       const posts = this.getPosts();
-      if (!post.id) {
-        post.id = 'post-' + Date.now();
-        post.views = 0;
-        post.date = new Date().toLocaleDateString('vi-VN');
-      }
-      const index = posts.findIndex(p => p.id === post.id);
-      if (index >= 0) {
-        posts[index] = { ...posts[index], ...post };
-      } else {
-        posts.unshift(post);
-      }
-      localStorage.setItem('ftech_posts', JSON.stringify(posts));
-      return post;
+      const normalized = normalizePost({
+        ...post,
+        id: post.id || `post-${Date.now()}`,
+        views: post.views || 0,
+        date: post.date || new Date().toLocaleDateString('vi-VN')
+      });
+      const index = posts.findIndex(p => p.id === normalized.id);
+      if (index >= 0) posts[index] = { ...posts[index], ...normalized };
+      else posts.unshift(normalized);
+      write(STORAGE_KEYS.posts, posts);
+      return normalized;
     },
     deletePost(id) {
-      const posts = this.getPosts().filter(p => p.id !== id);
-      localStorage.setItem('ftech_posts', JSON.stringify(posts));
+      write(STORAGE_KEYS.posts, this.getPosts().filter(p => p.id !== id));
     },
     updateStatus(id, status, rejectReason = '') {
-      const posts = this.getPosts();
-      const index = posts.findIndex(p => p.id === id);
-      if (index >= 0) {
-        posts[index].status = status;
-        if (rejectReason) {
-          posts[index].rejectReason = rejectReason;
-        } else {
-          delete posts[index].rejectReason;
-        }
-        localStorage.setItem('ftech_posts', JSON.stringify(posts));
-      }
+      const post = this.getPost(id);
+      if (!post) return;
+      post.status = status;
+      if (rejectReason) post.rejectReason = rejectReason;
+      else delete post.rejectReason;
+      this.savePost(post);
+    },
+    recalculatePostStars(postId) {
+      const reviews = this.getReviews(postId);
+      const post = this.getPost(postId);
+      if (!post || !reviews.length) return post;
+      const avg = reviews.reduce((sum, review) => sum + Number(review.stars || 0), 0) / reviews.length;
+      post.stars = Number(avg.toFixed(1));
+      post.reviews = reviews.length;
+      return this.savePost(post);
     },
 
-    // --- REVIEWS ---
-    getReviews() {
-      return JSON.parse(localStorage.getItem('ftech_reviews')) || [];
+    getReviews(postId = '') {
+      const reviews = read(STORAGE_KEYS.reviews).map(review => ({ postId: 'post-1', helpful: 0, ...review }));
+      return postId ? reviews.filter(r => r.postId === postId) : reviews;
     },
     saveReview(review) {
       const reviews = this.getReviews();
-      if (!review.id) {
-        review.id = Date.now();
-        review.date = new Date().toLocaleDateString('vi-VN');
-        review.helpful = 0;
-      }
-      reviews.unshift(review);
-      localStorage.setItem('ftech_reviews', JSON.stringify(reviews));
-      return review;
+      const currentUser = localStorage.getItem('ftech_user') || 'customer';
+      const postId = review.postId || 'post-1';
+      const normalized = {
+        ...review,
+        id: review.id || Date.now(),
+        postId,
+        date: review.date || new Date().toLocaleDateString('vi-VN'),
+        helpful: review.helpful || 0,
+        stars: Number(review.stars || 0),
+        verified: review.verified !== undefined ? review.verified : this.hasValidClickForUser(postId, currentUser)
+      };
+      reviews.unshift(normalized);
+      write(STORAGE_KEYS.reviews, reviews);
+      this.recalculatePostStars(postId);
+      return normalized;
     },
     deleteReview(id) {
-      const reviews = this.getReviews().filter(r => r.id !== id);
-      localStorage.setItem('ftech_reviews', JSON.stringify(reviews));
+      const reviews = this.getReviews();
+      const deleted = reviews.find(r => r.id === id);
+      write(STORAGE_KEYS.reviews, reviews.filter(r => r.id !== id));
+      if (deleted) this.recalculatePostStars(deleted.postId);
     },
     voteHelpful(id, isUp = true) {
       const reviews = this.getReviews();
       const index = reviews.findIndex(r => r.id === id);
       if (index >= 0) {
-        if (isUp) reviews[index].helpful++;
-        else reviews[index].helpful = Math.max(0, reviews[index].helpful - 1);
-        localStorage.setItem('ftech_reviews', JSON.stringify(reviews));
+        reviews[index].helpful = isUp ? reviews[index].helpful + 1 : Math.max(0, reviews[index].helpful - 1);
+        write(STORAGE_KEYS.reviews, reviews);
       }
     },
 
-    // --- COMMENTS ---
-    getComments() {
-      return JSON.parse(localStorage.getItem('ftech_comments')) || [];
+    getComments(postId = '') {
+      const comments = read(STORAGE_KEYS.comments).map(comment => ({ postId: 'post-1', ...comment }));
+      return postId ? comments.filter(c => c.postId === postId) : comments;
     },
     saveComment(comment) {
       const comments = this.getComments();
-      if (!comment.id) {
-        comment.id = Date.now();
-        comment.date = new Date().toLocaleDateString('vi-VN');
-      }
-      comments.push(comment);
-      localStorage.setItem('ftech_comments', JSON.stringify(comments));
-      return comment;
+      const normalized = {
+        ...comment,
+        id: comment.id || Date.now(),
+        postId: comment.postId || 'post-1',
+        date: comment.date || new Date().toLocaleDateString('vi-VN')
+      };
+      comments.push(normalized);
+      write(STORAGE_KEYS.comments, comments);
+      return normalized;
     },
     deleteComment(id) {
-      const comments = this.getComments().filter(c => c.id !== id);
-      localStorage.setItem('ftech_comments', JSON.stringify(comments));
+      write(STORAGE_KEYS.comments, this.getComments().filter(c => c.id !== id));
     },
 
-    // --- PARTNERS ---
     getPartners() {
-      return JSON.parse(localStorage.getItem('ftech_partners')) || [];
+      return read(STORAGE_KEYS.partners).map(normalizePartner);
+    },
+    getPartner(id) {
+      return this.getPartners().find(p => p.id === id || p.name === id);
     },
     savePartner(partner) {
+      const normalized = normalizePartner(partner);
       const partners = this.getPartners();
-      const index = partners.findIndex(p => p.name === partner.name);
+      const index = partners.findIndex(p => p.id === normalized.id || p.name === normalized.name);
       if (index >= 0) {
-        partners[index] = { ...partners[index], ...partner };
+        const oldRate = Number(partners[index].commissionRate) || 0;
+        partners[index] = { ...partners[index], ...normalized };
+        if (oldRate !== normalized.commissionRate) this.saveCommissionLog(normalized.id, oldRate, normalized.commissionRate);
       } else {
-        partners.push(partner);
+        partners.push(normalized);
       }
-      localStorage.setItem('ftech_partners', JSON.stringify(partners));
-      return partner;
+      write(STORAGE_KEYS.partners, partners);
+      return normalized;
     },
-    deletePartner(name) {
-      const partners = this.getPartners().filter(p => p.name !== name);
-      localStorage.setItem('ftech_partners', JSON.stringify(partners));
+    deletePartner(nameOrId) {
+      write(STORAGE_KEYS.partners, this.getPartners().filter(p => p.name !== nameOrId && p.id !== nameOrId));
     },
 
-    // --- AFFILIATES ---
-    getAffiliates() {
-      return JSON.parse(localStorage.getItem('ftech_affiliates')) || [];
+    getAffiliates(postId = '') {
+      const affiliates = read(STORAGE_KEYS.affiliates).map(normalizeAffiliate);
+      return postId ? affiliates.filter(a => a.postId === postId) : affiliates;
     },
-    saveAffiliate(aff) {
+    getAffiliate(id) {
+      return this.getAffiliates().find(a => a.id === id);
+    },
+    saveAffiliate(affiliate) {
+      const normalized = normalizeAffiliate(affiliate);
       const affiliates = this.getAffiliates();
-      if (!aff.id) {
-        aff.id = 'aff-' + Date.now();
-        aff.clicks = 0;
-      }
-      const index = affiliates.findIndex(a => a.id === aff.id);
-      if (index >= 0) {
-        affiliates[index] = { ...affiliates[index], ...aff };
-      } else {
-        affiliates.push(aff);
-      }
-      localStorage.setItem('ftech_affiliates', JSON.stringify(affiliates));
-      return aff;
+      const index = affiliates.findIndex(a => a.id === normalized.id);
+      if (index >= 0) affiliates[index] = { ...affiliates[index], ...normalized };
+      else affiliates.push(normalized);
+      write(STORAGE_KEYS.affiliates, affiliates);
+      return normalized;
     },
     deleteAffiliate(id) {
-      const affiliates = this.getAffiliates().filter(a => a.id !== id);
-      localStorage.setItem('ftech_affiliates', JSON.stringify(affiliates));
+      write(STORAGE_KEYS.affiliates, this.getAffiliates().filter(a => a.id !== id));
     },
     incrementClicks(id) {
+      return this.trackClick(id).affiliate;
+    },
+    trackClick(linkId, options = {}) {
       const affiliates = this.getAffiliates();
-      const index = affiliates.findIndex(a => a.id === id);
-      if (index >= 0) {
-        affiliates[index].clicks++;
-        localStorage.setItem('ftech_affiliates', JSON.stringify(affiliates));
-      }
+      const index = affiliates.findIndex(a => a.id === linkId);
+      if (index < 0) return { affiliate: null, log: null };
+
+      const now = new Date();
+      const ipAddress = options.ipAddress || localStorage.getItem('ftech_mock_ip') || '127.0.0.1';
+      const logs = this.getClickLogs();
+      const oneHourAgo = now.getTime() - 60 * 60 * 1000;
+      const recentSameIp = logs.filter(log =>
+        log.linkId === linkId &&
+        log.ipAddress === ipAddress &&
+        new Date(log.timestamp).getTime() >= oneHourAgo
+      );
+      const status = recentSameIp.length >= 5 ? 'suspicious' : 'valid';
+      const affiliate = affiliates[index];
+      const log = {
+        id: `click-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+        linkId,
+        partnerId: affiliate.partnerId,
+        postId: affiliate.postId,
+        timestamp: now.toISOString(),
+        ipAddress,
+        status,
+        username: localStorage.getItem('ftech_user') || 'guest'
+      };
+
+      logs.push(log);
+      if (status === 'valid') affiliates[index].clicks = Number(affiliates[index].clicks || 0) + 1;
+      write(STORAGE_KEYS.clickLogs, logs);
+      write(STORAGE_KEYS.affiliates, affiliates);
+      return { affiliate: affiliates[index], log };
+    },
+    getClickLogs(filter = {}) {
+      const logs = read(STORAGE_KEYS.clickLogs);
+      return logs.filter(log =>
+        (!filter.postId || log.postId === filter.postId) &&
+        (!filter.partnerId || log.partnerId === filter.partnerId) &&
+        (!filter.linkId || log.linkId === filter.linkId) &&
+        (!filter.status || log.status === filter.status)
+      );
+    },
+    hasValidClickForUser(postId, username) {
+      return this.getClickLogs({ postId }).some(log => log.status === 'valid' && (!username || log.username === username || log.username === 'guest'));
+    },
+    getCommissionLogs() {
+      return read(STORAGE_KEYS.commissionLogs);
+    },
+    saveCommissionLog(partnerId, oldRate, newRate) {
+      const logs = this.getCommissionLogs();
+      logs.unshift({
+        id: `comm-${Date.now()}`,
+        partnerId,
+        oldRate,
+        newRate,
+        changedBy: localStorage.getItem('ftech_user') || 'admin',
+        changedAt: new Date().toISOString(),
+        effectiveDate: new Date().toLocaleDateString('vi-VN')
+      });
+      write(STORAGE_KEYS.commissionLogs, logs);
+    },
+    calculateCommissionSummary() {
+      const validLogs = this.getClickLogs({ status: 'valid' });
+      const posts = this.getPosts();
+      const partners = this.getPartners();
+      const revenue = validLogs.reduce((sum, log) => {
+        const post = posts.find(p => p.id === log.postId);
+        const partner = partners.find(p => p.id === log.partnerId);
+        return sum + ((post ? Number(post.price) || 0 : 0) * (partner ? Number(partner.commissionRate) || 0 : 0));
+      }, 0);
+      return {
+        validClicks: validLogs.length,
+        suspiciousClicks: this.getClickLogs({ status: 'suspicious' }).length,
+        revenue
+      };
     }
   };
 
-  // Bind to global window scope
   window.FTECHDB = db;
 })();

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FTECH - Đang chuyển hướng</title>
+  <link rel="stylesheet" href="assets/css/common/base.css">
+  <style>
+    body {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      margin: 0;
+      background: #f6f8ff;
+      color: #20264a;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .redirect-box {
+      width: min(520px, calc(100vw - 32px));
+      background: rgba(255, 255, 255, .88);
+      border: 1px solid rgba(76, 84, 170, .18);
+      border-radius: 8px;
+      padding: 28px;
+      box-shadow: 0 20px 50px rgba(42, 47, 95, .14);
+      text-align: center;
+    }
+
+    .status {
+      font-size: 14px;
+      color: #5d6897;
+      line-height: 1.6;
+    }
+
+    .spinner {
+      width: 34px;
+      height: 34px;
+      border: 3px solid rgba(76, 84, 170, .18);
+      border-top-color: #4a7dff;
+      border-radius: 50%;
+      margin: 0 auto 18px;
+      animation: spin .8s linear infinite;
+    }
+
+    .fallback {
+      display: inline-flex;
+      margin-top: 18px;
+      color: #315cff;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <main class="redirect-box">
+    <div class="spinner"></div>
+    <h1>Đang ghi nhận lượt click</h1>
+    <p class="status" id="redirectStatus">FTECH đang kiểm tra liên kết affiliate và chuyển bạn đến đối tác bán hàng.</p>
+    <a class="fallback" id="fallbackLink" href="trangchu.html">Quay về trang chủ</a>
+  </main>
+
+  <script src="assets/js/common/db.js"></script>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const linkId = params.get('linkId');
+    const fallback = params.get('from') || 'trangchu.html';
+    const statusEl = document.getElementById('redirectStatus');
+    const fallbackLink = document.getElementById('fallbackLink');
+
+    fallbackLink.href = fallback;
+
+    if (!linkId || !window.FTECHDB) {
+      statusEl.textContent = 'Liên kết affiliate không hợp lệ. Vui lòng quay lại bài review.';
+    } else {
+      const result = window.FTECHDB.trackClick(linkId);
+      if (!result.affiliate) {
+        statusEl.textContent = 'Không tìm thấy liên kết affiliate trong cơ sở dữ liệu ảo.';
+      } else {
+        const suffix = result.log.status === 'suspicious'
+          ? ' Lượt click được đánh dấu nghi ngờ vì lặp lại quá nhiều trong 1 giờ.'
+          : ' Lượt click hợp lệ đã được đồng bộ vào dashboard.';
+
+        statusEl.textContent = `Đang chuyển đến ${result.affiliate.partner}.${suffix}`;
+        fallbackLink.href = result.affiliate.url;
+
+        setTimeout(() => {
+          window.location.href = result.affiliate.url;
+        }, 900);
+      }
+    }
+  </script>
+</body>
+</html>

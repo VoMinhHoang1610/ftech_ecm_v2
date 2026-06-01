@@ -31,22 +31,17 @@ document.addEventListener('DOMContentLoaded', () => {
 function updateDashboardData() {
   const posts = window.FTECHDB.getPosts();
   const accounts = window.FTECHDB.getAccounts();
-  const affiliates = window.FTECHDB.getAffiliates();
   const partners = window.FTECHDB.getPartners();
+  const clickLogs = window.FTECHDB.getClickLogs();
+  const commissionSummary = window.FTECHDB.calculateCommissionSummary();
   
   const pendingCount = posts.filter(p => p.status === 'pending').length;
   const approvedCount = posts.filter(p => p.status === 'approved').length;
 
-  // 1. Calculate click metrics dynamically
-  let totalClicks = 0;
-  affiliates.forEach(a => {
-    totalClicks += parseInt(a.clicks) || 0;
-  });
-  // fallback if clicks are empty
-  if (totalClicks === 0) totalClicks = 4820;
-
+  // 1. Calculate click and commission metrics from click logs.
+  const totalClicks = commissionSummary.validClicks;
   const displayClicks = totalClicks >= 1000 ? `${(totalClicks / 1000).toFixed(1)}K` : totalClicks;
-  const displayRevenue = `${((totalClicks * 1500) / 1000000).toFixed(1)}Mđ`;
+  const displayRevenue = `${(commissionSummary.revenue / 1000000).toFixed(1)}Mđ`;
 
   // 2. Map KPIs
   document.getElementById('kpi-users').textContent = accounts.length.toLocaleString('vi-VN');
@@ -78,8 +73,8 @@ function updateDashboardData() {
     } else {
       sortedPosts.forEach((p, idx) => {
         const viewsDisplay = p.views >= 1000 ? `${(p.views / 1000).toFixed(1)}K` : p.views;
-        const affClicks = p.status === 'approved' ? Math.floor(p.views * 0.08) : 0;
-        const ctr = p.status === 'approved' ? '6.8%' : '0%';
+        const affClicks = clickLogs.filter(log => log.postId === p.id && log.status === 'valid').length;
+        const ctr = p.views ? `${((affClicks / p.views) * 100).toFixed(1)}%` : '0%';
         const widthPercent = idx === 0 ? '100%' : idx === 1 ? '70%' : '50%';
         
         html += `
@@ -99,7 +94,15 @@ function updateDashboardData() {
   }
 
   // 5. Render top partners dynamically
-  const sortedPartners = [...partners].sort((a, b) => (b.clicks || 0) - (a.clicks || 0)).slice(0, 3);
+  const partnerMetrics = partners.map(partner => {
+    const logs = clickLogs.filter(log => log.partnerId === partner.id && log.status === 'valid');
+    const revenue = logs.reduce((sum, log) => {
+      const post = posts.find(p => p.id === log.postId);
+      return sum + ((post ? Number(post.price) || 0 : 0) * (Number(partner.commissionRate) || 0));
+    }, 0);
+    return { ...partner, validClicks: logs.length, revenue };
+  });
+  const sortedPartners = partnerMetrics.sort((a, b) => b.revenue - a.revenue).slice(0, 3);
   const partnerRankContainer = document.querySelector('.bottom-grid .card:nth-child(2)');
   if (partnerRankContainer) {
     let html = `<div class="card-title">Top đối tác</div><div class="card-sub">Xếp hạng theo doanh thu affiliate và click thực tế</div>`;
@@ -108,9 +111,9 @@ function updateDashboardData() {
       html += `<div style="padding: 20px; text-align: center; color: var(--muted);">Chưa có đối tác hoạt động.</div>`;
     } else {
       sortedPartners.forEach((p, idx) => {
-        const clicks = p.clicks || 0;
+        const clicks = p.validClicks || 0;
         const convs = Math.floor(clicks * 0.06);
-        const revenue = `${((clicks * 1500) / 1000000).toFixed(1)}Mđ`;
+        const revenue = `${(p.revenue / 1000000).toFixed(1)}Mđ`;
         const widthPercent = idx === 0 ? '100%' : idx === 1 ? '70%' : '50%';
         
         html += `
@@ -154,7 +157,7 @@ function updateDashboardData() {
     actList.innerHTML = `
       <div class="act-item"><div class="act-dot" style="background: var(--accent);"></div><div class="act-text">Bài viết mới nhất: <strong>${lastPost.title}</strong> (${lastPost.status})</div><div class="act-time">${lastPost.date}</div></div>
       <div class="act-item"><div class="act-dot" style="background: var(--green);"></div><div class="act-text">Thành viên đăng ký mới: <strong>${lastUser.name}</strong> (vai trò: ${lastUser.role})</div><div class="act-time">Vừa đăng ký</div></div>
-      <div class="act-item"><div class="act-dot" style="background: var(--orange);"></div><div class="act-text">Hiện có <strong>${pendingCount} bài viết chờ duyệt</strong> trong hệ thống.</div><div class="act-time">Cần kiểm duyệt</div></div>
+      <div class="act-item"><div class="act-dot" style="background: var(--orange);"></div><div class="act-text">Hiện có <strong>${pendingCount} bài viết chờ duyệt</strong> và <strong>${commissionSummary.suspiciousClicks} click nghi ngờ</strong>.</div><div class="act-time">Cần kiểm duyệt</div></div>
     `;
   }
 
