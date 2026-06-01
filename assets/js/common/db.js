@@ -366,6 +366,24 @@
     };
   }
 
+  function normalizeComment(comment) {
+    const userId = comment.userId || comment.username || '';
+    return {
+      ...comment,
+      id: comment.id || Date.now(),
+      postId: comment.postId || 'post-1',
+      userId,
+      name: comment.name || userId || 'Khach hang FTECH',
+      date: comment.date || new Date().toLocaleDateString('vi-VN'),
+      status: comment.status || 'approved',
+      approvedBy: comment.approvedBy || (comment.status === 'approved' ? 'admin' : ''),
+      approvedAt: comment.approvedAt || '',
+      rejectedBy: comment.rejectedBy || '',
+      rejectedAt: comment.rejectedAt || '',
+      rejectReason: comment.rejectReason || ''
+    };
+  }
+
   function initCollection(key, seed, normalizer) {
     const current = read(key, null);
     const base = current && current.length ? current : seed;
@@ -406,7 +424,7 @@
 
     initCollection(STORAGE_KEYS.posts, DEFAULT_POSTS, normalizePost);
     initCollection(STORAGE_KEYS.reviews, DEFAULT_REVIEWS, review => ({ postId: 'post-1', helpful: 0, ...review }));
-    initCollection(STORAGE_KEYS.comments, DEFAULT_COMMENTS, comment => ({ postId: 'post-1', ...comment }));
+    initCollection(STORAGE_KEYS.comments, DEFAULT_COMMENTS, normalizeComment);
     initCollection(STORAGE_KEYS.partners, DEFAULT_PARTNERS, normalizePartner);
     initCollection(STORAGE_KEYS.affiliates, DEFAULT_AFFILIATES, normalizeAffiliate);
     if (!localStorage.getItem(STORAGE_KEYS.commissionLogs)) write(STORAGE_KEYS.commissionLogs, []);
@@ -520,24 +538,77 @@
       }
     },
 
-    getComments(postId = '') {
-      const comments = read(STORAGE_KEYS.comments).map(comment => ({ postId: 'post-1', ...comment }));
-      return postId ? comments.filter(c => c.postId === postId) : comments;
+    getComments(postId = '', filter = {}) {
+      const comments = read(STORAGE_KEYS.comments).map(normalizeComment);
+      return comments.filter(comment =>
+        (!postId || comment.postId === postId) &&
+        (!filter.status || comment.status === filter.status) &&
+        (!filter.userId || comment.userId === filter.userId) &&
+        (!filter.name || comment.name === filter.name)
+      );
     },
     saveComment(comment) {
       const comments = this.getComments();
+      const currentUser = localStorage.getItem('ftech_user') || '';
+      const currentAccount = currentUser ? this.getAccount(currentUser) : null;
       const normalized = {
         ...comment,
         id: comment.id || Date.now(),
         postId: comment.postId || 'post-1',
-        date: comment.date || new Date().toLocaleDateString('vi-VN')
+        userId: comment.userId || currentUser,
+        name: comment.name || (currentAccount && currentAccount.name) || localStorage.getItem('ftech_username') || 'Khach hang FTECH',
+        date: comment.date || new Date().toLocaleDateString('vi-VN'),
+        status: comment.status || 'pending',
+        approvedBy: comment.approvedBy || '',
+        approvedAt: comment.approvedAt || '',
+        rejectedBy: comment.rejectedBy || '',
+        rejectedAt: comment.rejectedAt || '',
+        rejectReason: comment.rejectReason || ''
       };
       comments.push(normalized);
       write(STORAGE_KEYS.comments, comments);
       return normalized;
     },
+    approveComment(id, approvedBy = localStorage.getItem('ftech_user') || 'admin') {
+      const comments = this.getComments();
+      const index = comments.findIndex(c => String(c.id) === String(id));
+      if (index < 0) return null;
+      comments[index] = {
+        ...comments[index],
+        status: 'approved',
+        approvedBy,
+        approvedAt: new Date().toISOString(),
+        rejectedBy: '',
+        rejectedAt: '',
+        rejectReason: ''
+      };
+      write(STORAGE_KEYS.comments, comments);
+      return comments[index];
+    },
+    rejectComment(id, rejectReason, rejectedBy = localStorage.getItem('ftech_user') || 'admin') {
+      const comments = this.getComments();
+      const index = comments.findIndex(c => String(c.id) === String(id));
+      if (index < 0) return null;
+      comments[index] = {
+        ...comments[index],
+        status: 'rejected',
+        rejectedBy,
+        rejectedAt: new Date().toISOString(),
+        rejectReason: rejectReason || 'Noi dung chua phu hop'
+      };
+      write(STORAGE_KEYS.comments, comments);
+      return comments[index];
+    },
     deleteComment(id) {
       write(STORAGE_KEYS.comments, this.getComments().filter(c => c.id !== id));
+    },
+    getCommentSummary(postId = '') {
+      const comments = this.getComments(postId);
+      return comments.reduce((summary, comment) => {
+        summary.total += 1;
+        summary[comment.status] = (summary[comment.status] || 0) + 1;
+        return summary;
+      }, { total: 0, pending: 0, approved: 0, rejected: 0 });
     },
 
     getPartners() {

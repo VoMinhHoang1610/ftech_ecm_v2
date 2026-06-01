@@ -117,7 +117,7 @@ function renderProfileData() {
   const allReviews = window.FTECHDB.getReviews();
   const userReviews = allReviews.filter(r => r.name === account.name || r.name === 'Nguyễn Minh Vỹ');
   const allComments = window.FTECHDB.getComments();
-  const userComments = allComments.filter(c => c.name === account.name || c.name === 'Nguyễn Minh Vỹ');
+  const userComments = allComments.filter(c => c.userId === account.username || c.name === account.name);
 
   const stats = document.querySelectorAll('.stats .stat strong');
   if (stats.length >= 3) {
@@ -167,19 +167,27 @@ function renderProfileData() {
     if (userComments.length === 0) {
       commentsList.innerHTML = '<div class="item" style="color:var(--muted);text-align:center;">Bạn chưa gửi bình luận nào.</div>';
     } else {
-      commentsList.innerHTML = userComments.map(c => `
+      commentsList.innerHTML = userComments.map(c => {
+        const statusLabel = c.status === 'approved' ? 'Da duyet' : c.status === 'rejected' ? 'Tu choi' : 'Cho duyet';
+        const statusClass = c.status === 'approved' ? 'done' : c.status === 'rejected' ? 'rejected' : 'processing';
+        return `
         <div class="item">
           <div class="item-head">
             <div class="item-title">Bình luận bài viết</div>
             <div class="item-date">${c.date}</div>
           </div>
           <div class="item-text">${c.text}</div>
+          <div class="chips">
+            <span class="chip status ${statusClass}">${statusLabel}</span>
+            ${c.rejectReason ? `<span class="chip">Ly do: ${c.rejectReason}</span>` : ''}
+          </div>
           <div class="item-actions">
-            <a href="product.html">Xem bài viết</a>
+            <a href="product.html?id=${encodeURIComponent(c.postId || 'post-1')}">Xem bài viết</a>
             <button onclick="deleteMyComment(${c.id})">Xóa</button>
           </div>
         </div>
-      `).join('');
+      `;
+      }).join('');
     }
   }
 }
