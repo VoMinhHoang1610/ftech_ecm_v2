@@ -40,7 +40,8 @@
       'dashboard.html': '/Admin/Dashboard/Index',
       'manage-accounts.html': '/Admin/Account/Accounts',
       'manage-partners.html': '/Admin/Partner/Index',
-      'manage-posts.html': '/SuperAdmin/Post/Index'
+      'manage-posts.html': '/SuperAdmin/Post/Index',
+      'manage-comments.html': '/SuperAdmin/Comment/Index'
     };
 
     // Extract basename and hash/search params
@@ -88,7 +89,7 @@
     }
   }
 
-  const adminPages = ['dashboard.html', 'manage-accounts.html', 'manage-partners.html', 'manage-posts.html'];
+  const adminPages = ['dashboard.html', 'manage-accounts.html', 'manage-partners.html', 'manage-posts.html', 'manage-comments.html'];
   const contentPages = ['content-manager.html', 'postmanager.html'];
   const partnerPages = ['manage-affiliates.html'];
 

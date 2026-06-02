@@ -43,6 +43,54 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // --- ACTIONS ---
 
+  window.openAddPartnerModal = function () {
+    document.getElementById('partnerEditTitle').textContent = 'Đăng ký đối tác mới';
+    document.getElementById('partnerNameField').value = '';
+    document.getElementById('partnerEmailField').value = '';
+    document.getElementById('partnerCategoryField').value = 'TMĐT';
+    document.getElementById('partnerCommissionField').value = '5-10% / đơn';
+    document.getElementById('partnerDomainField').value = '';
+    document.getElementById('partnerNoteField').value = '';
+    document.getElementById('partnerEditModal').classList.add('open');
+  };
+
+  window.saveNewPartner = function () {
+    const name = document.getElementById('partnerNameField').value.trim();
+    const email = document.getElementById('partnerEmailField').value.trim();
+    const category = document.getElementById('partnerCategoryField').value;
+    const commission = document.getElementById('partnerCommissionField').value.trim();
+    const domain = document.getElementById('partnerDomainField').value.trim();
+    const note = document.getElementById('partnerNoteField').value.trim();
+
+    if (!name || !email || !domain) {
+      alert('Vui lòng nhập tên đối tác, email liên hệ và website.');
+      return;
+    }
+
+    const partners = FTECHDB.getPartners();
+    if (partners.find(x => x.name === name)) {
+      alert('Tên đối tác này đã tồn tại!');
+      return;
+    }
+
+    FTECHDB.savePartner({
+      name,
+      logo: '🤝',
+      clicks: 0,
+      cvr: '0%',
+      date: new Date().toLocaleDateString('vi-VN').substring(3),
+      status: 'pending',
+      email,
+      category,
+      commission,
+      domain,
+      note
+    });
+
+    alert('Đã thêm đối tác mới vào danh sách chờ duyệt.');
+    window.closeAffiliateModal('partnerEditModal');
+  };
+
   window.openAffiliateModal = function (mode, id = '') {
     editMode = mode;
     currentEditAffId = id;

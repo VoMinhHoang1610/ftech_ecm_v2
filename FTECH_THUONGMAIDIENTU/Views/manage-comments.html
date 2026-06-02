@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>FTECH Admin - Duyệt Bình Luận</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/pages/manage-comments.css">
+  <link rel="stylesheet" href="assets/css/common/inline-utilities.css">
+  <link rel="stylesheet" href="assets/css/common/admin-shell.css">
+</head>
+<body>
+<div class="sidebar">
+  <div class="sb-logo"><a href="dashboard.html" class="logo"><span class="logo-badge">F</span>FTECH Admin</a></div>
+  <div class="sb-label">Super Admin</div>
+  <nav class="sb-menu">
+    <a href="dashboard.html" class="sb-item"><span class="si">📊</span>Xem báo cáo thống kê</a>
+    <a href="manage-posts.html" class="sb-item"><span class="si">✅</span>Duyệt bài viết</a>
+    <a href="manage-comments.html" class="sb-item active"><span class="si">💬</span>Duyệt bình luận</a>
+    <a href="manage-partners.html" class="sb-item"><span class="si">🆕</span>Duyệt đối tác mới</a>
+    <a href="manage-accounts.html" class="sb-item"><span class="si">🛡️</span>Tài khoản hệ thống</a>
+  </nav>
+  <div class="sb-bottom"><div class="sb-user"><div class="sb-avatar"><img src="https://i.pravatar.cc/120?img=12" alt="Nguyễn Minh Vỹ"></div><div><div class="sb-user-name">Nguyễn Minh Vỹ</div><div class="sb-user-role">Super Admin</div></div></div></div>
+</div>
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title">Duyệt Bình Luận</div>
+    <div class="topbar-search"><input type="text" id="searchQuery" placeholder="Tìm người dùng, nội dung, bài viết..."/><button type="button" id="btnSearch">🔍</button></div>
+    <div class="u-style-001"><button class="btn-ghost" type="button" onclick="renderAll()">Làm mới</button></div>
+  </div>
+  <div class="content">
+    <div class="stat-row">
+      <div class="stat-card sc-pending"><div class="stat-label">Chờ duyệt</div><div class="stat-val" id="statPending">0</div><div class="stat-sub">Ưu tiên xử lý</div></div>
+      <div class="stat-card sc-approved"><div class="stat-label">Đã duyệt</div><div class="stat-val" id="statApproved">0</div><div class="stat-sub">Hiển thị công khai</div></div>
+      <div class="stat-card sc-rejected"><div class="stat-label">Từ chối</div><div class="stat-val" id="statRejected">0</div><div class="stat-sub">Có lý do từ chối</div></div>
+    </div>
+    <div class="filter-wrap">
+      <button class="fchip active" data-status="all" type="button" onclick="setCommentChip(this)">Tất cả</button>
+      <button class="fchip fc-pending" data-status="pending" type="button" onclick="setCommentChip(this)">Chờ duyệt</button>
+      <button class="fchip fc-approved" data-status="approved" type="button" onclick="setCommentChip(this)">Đã duyệt</button>
+      <button class="fchip fc-rejected" data-status="rejected" type="button" onclick="setCommentChip(this)">Từ chối</button>
+    </div>
+    <section class="comment-moderation">
+      <div class="cm-head">
+        <div>
+          <div class="cm-title">Danh sách bình luận</div>
+          <div class="cm-sub">Chỉ bình luận đã duyệt mới hiển thị công khai ở trang sản phẩm.</div>
+        </div>
+        <div class="cm-summary" id="commentSummary">0 chờ duyệt</div>
+      </div>
+      <div id="commentModerationList"></div>
+    </section>
+  </div>
+</div>
+<div class="modal-overlay" id="rejectCommentModal">
+  <div class="modal">
+    <div class="modal-title">Từ chối bình luận</div>
+    <div class="modal-sub">Nhập lý do để người dùng thấy trong trang hồ sơ.</div>
+    <div class="modal-post-ref"><span id="rejectCommentRef">Bình luận</span></div>
+    <label class="fl">Lý do từ chối <span class="u-style-046">*</span></label>
+    <textarea class="modal-ta" id="rejectCommentReason" placeholder="Ví dụ: nội dung trùng lặp, ngôn ngữ chưa phù hợp..."></textarea>
+    <div class="modal-actions">
+      <button class="modal-btn-cancel" type="button" onclick="closeModal('rejectCommentModal')">Hủy</button>
+      <button class="modal-btn-confirm" type="button" onclick="confirmRejectComment()">Gửi từ chối</button>
+    </div>
+  </div>
+</div>
+<script src="assets/js/common/db.js"></script>
+<script src="assets/js/common/auth.js"></script>
+<script src="assets/js/pages/manage-comments.js"></script>
+</body>
+</html>
