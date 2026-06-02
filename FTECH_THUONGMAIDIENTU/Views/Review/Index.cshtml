@@ -5,6 +5,14 @@
 Url.Content("~/Content/css/pages/reviewModule.css") + "\"");
     html = html.Replace("href=\"assets/css/common/inline-utilities.css\"", "href=\"" +
 Url.Content("~/Content/css/common/inline-utilities.css") + "\"");
+    html = html.Replace("src=\"assets/js/common/toast.js\"", "src=\"" +
+Url.Content("~/Scripts/js/common/toast.js") + "\"");
+    html = html.Replace("src=\"assets/js/common/db.js\"", "src=\"" +
+Url.Content("~/Scripts/js/common/db.js") + "\"");
+    html = html.Replace("src=\"assets/js/common/auth.js\"", "src=\"" +
+Url.Content("~/Scripts/js/common/auth.js") + "\"");
+    html = html.Replace("src=\"assets/js/common/profanity-filter.js\"", "src=\"" +
+Url.Content("~/Scripts/js/common/profanity-filter.js") + "\"");
     html = html.Replace("src=\"assets/js/pages/reviewModule.js\"", "src=\"" +
 Url.Content("~/Scripts/js/pages/reviewModule.js") + "\"");
     html = html.Replace("trangchu.html", Url.Action("Index", "Home"));
