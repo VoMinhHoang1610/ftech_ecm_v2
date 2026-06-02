@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
@@ -62,9 +62,11 @@
 
   <div class="modal-overlay" id="userModal"><div class="modal"><div class="modal-title" id="userModalTitle">Cập nhật tài khoản</div><div class="modal-sub">Chỉnh thông tin, vai trò và trạng thái truy cập của tài khoản.</div><div class="form-grid"><div><label class="u-style-043">Username</label><input class="input-field" id="userModalUsername" type="text" placeholder="Tên đăng nhập"></div><div><label class="u-style-043">Mật khẩu</label><input class="input-field" id="userModalPassword" type="password" placeholder="Mật khẩu"></div><div><label class="u-style-043">Họ tên</label><input class="input-field" id="userModalName" type="text" placeholder="Họ và tên"></div><div><label class="u-style-043">Vai trò</label><select class="input-field" id="userModalRole"><option value="admin">Super Admin</option><option value="content">Content Manager</option><option value="partner">Affiliate Partner</option><option value="customer">Customer</option></select></div><div><label class="u-style-043">Trạng thái</label><select class="input-field" id="userModalStatus"><option value="active">Hoạt động</option><option value="locked">Bị khóa</option></select></div><div><label class="u-style-043">Quyền chính / Mô tả</label><input class="input-field" id="userModalScope" type="text" placeholder="Kiểm duyệt nội dung, quản lý link, chăm sóc tài khoản..."></div></div><div class="u-style-044"><label class="u-style-043">URL ảnh đại diện</label><textarea class="textarea-field" id="userModalAvatar" placeholder="Nhập URL ảnh đại diện hoặc để trống dùng mặc định"></textarea></div><div class="modal-actions"><button class="btn-ghost" type="button" onclick="closeAccountModal('userModal')">Đóng</button><button class="btn-primary" type="button" onclick="saveUserProcess()">Lưu tài khoản</button></div></div></div>
   <div class="modal-overlay" id="lockModal"><div class="modal"><div class="modal-title">Phân quyền vai trò</div><div class="modal-sub">Cập nhật vai trò và quyền truy cập cho tài khoản hệ thống.</div><div class="u-style-045">Tài khoản: <span id="lockModalName">Nguyễn Tuấn Anh</span></div><div><label class="u-style-043">Ghi chú phân quyền / Lý do thay đổi trạng thái</label><textarea class="textarea-field" id="lockReasonField" placeholder="Nhập lý do thay đổi quyền truy cập"></textarea></div><div class="modal-actions"><button class="btn-ghost" type="button" onclick="closeAccountModal('lockModal')">Hủy</button><button class="btn-primary" type="button" onclick="submitLockAction()">Lưu quyền</button></div></div></div>
+  <script src="assets/js/common/toast.js"></script>
   <script src="assets/js/common/db.js"></script>
   <script src="assets/js/common/auth.js"></script>
   <script src="assets/js/pages/manage-accounts.js"></script>
 
 </body>
 </html>
+
