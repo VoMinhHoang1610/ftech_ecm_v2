@@ -221,7 +221,7 @@ function confirmDelete() {
   window.FTECHDB.deletePost(currentDeleteId);
   closeModal('deleteModal');
   renderPostRows();
-  alert('🗑️ Bài viết đã được xóa vĩnh viễn khỏi hệ thống.');
+  showToast('Bài viết đã được xóa vĩnh viễn khỏi hệ thống.', 'info');
 }
 
 /* ── CLOSE MODALS ── */

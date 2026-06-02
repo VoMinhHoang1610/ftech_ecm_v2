@@ -63,13 +63,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const note = document.getElementById('partnerNoteField').value.trim();
 
     if (!name || !email || !domain) {
-      alert('Vui lòng nhập tên đối tác, email liên hệ và website.');
+      showToast('Vui lòng nhập tên đối tác, email liên hệ và website.', 'warn');
       return;
     }
 
     const partners = FTECHDB.getPartners();
     if (partners.find(x => x.name === name)) {
-      alert('Tên đối tác này đã tồn tại!');
+      showToast('Tên đối tác này đã tồn tại!', 'error');
       return;
     }
 
@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function () {
       note
     });
 
-    alert('Đã thêm đối tác mới vào danh sách chờ duyệt.');
+    showToast('Đã thêm đối tác mới vào danh sách chờ duyệt.', 'success');
     window.closeAffiliateModal('partnerEditModal');
   };
 
@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const note = document.getElementById('affiliateNoteField').value.trim();
 
     if (!name || !url) {
-      alert('Vui lòng nhập tên link/sản phẩm và đường dẫn affiliate.');
+      showToast('Vui lòng nhập tên link/sản phẩm và đường dẫn affiliate.', 'warn');
       return;
     }
 
@@ -172,17 +172,21 @@ document.addEventListener('DOMContentLoaded', function () {
     affData.note = note;
 
     FTECHDB.saveAffiliate(affData);
-    alert(editMode === 'create' ? 'Đã tạo link affiliate mới thành công.' : 'Đã cập nhật link affiliate thành công.');
+    showToast(editMode === 'create' ? 'Đã tạo link affiliate mới thành công.' : 'Đã cập nhật link affiliate thành công.', 'success');
     window.closeAffiliateModal('affiliateModal');
     renderAll();
   };
 
   window.doDeleteAffiliate = function (id) {
-    if (confirm('Bạn có chắc chắn muốn xóa link affiliate này không?')) {
-      FTECHDB.deleteAffiliate(id);
-      alert('Đã xóa link affiliate thành công.');
-      renderAll();
-    }
+    showConfirm(
+      'Bạn có chắc chắn muốn xóa link affiliate này không?',
+      function () {
+        FTECHDB.deleteAffiliate(id);
+        showToast('Đã xóa link affiliate thành công.', 'info');
+        renderAll();
+      },
+      { title: 'Xóa Affiliate Link', icon: '🗑️', okText: 'Xóa' }
+    );
   };
 
   window.openCommissionModal = function (partner = '') {
@@ -202,14 +206,14 @@ document.addEventListener('DOMContentLoaded', function () {
     const partner = FTECHDB.getPartners().find(p => p.name === partnerName);
 
     if (!partner || commissionRate <= 0) {
-      alert('Vui lòng chọn đối tác và nhập tỷ lệ hoa hồng hợp lệ.');
+      showToast('Vui lòng chọn đối tác và nhập tỷ lệ hoa hồng hợp lệ.', 'warn');
       return;
     }
 
     partner.commissionRate = commissionRate;
     partner.commission = `${minRate}-${maxRate}%`;
     FTECHDB.savePartner(partner);
-    alert('Đã lưu tỷ lệ hoa hồng mới và ghi log thay đổi commission.');
+    showToast('Đã lưu tỷ lệ hoa hồng mới và ghi log thay đổi commission.', 'success');
     window.closeAffiliateModal('commissionModal');
     renderAll();
   };

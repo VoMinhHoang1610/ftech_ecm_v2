@@ -1,4 +1,4 @@
-<html lang="vi"><head>
+﻿<html lang="vi"><head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FTECH Admin - Quản Lý Đối Tác</title>
@@ -56,7 +56,9 @@
 </div>
 <div class="modal-overlay" id="partnerEditModal"><div class="modal"><div class="modal-title" id="partnerEditTitle">Cập nhật thông tin đối tác liên kết</div><div class="modal-sub">Cập nhật thông tin đối tác và trạng thái hợp tác.</div><div class="form-grid"><div><label class="u-style-043">Tên đối tác</label><input class="input-field" id="partnerNameField" type="text" placeholder="Tên đối tác"></div><div><label class="u-style-043">Trạng thái</label><select class="select-field" id="partnerStatusField"><option value="active">Đang hoạt động</option><option value="pending">Chờ duyệt</option><option value="paused">Tạm dừng</option></select></div><div><label class="u-style-043">Email liên hệ</label><input class="input-field" id="partnerEmailField" type="text" placeholder="partner@domain.com"></div><div><label class="u-style-043">Ngành hàng</label><select class="select-field" id="partnerCategoryField"><option value="TMĐT">Thương mại điện tử</option><option value="Gaming">Gaming</option><option value="Điện tử">Điện tử</option><option value="Phụ kiện">Phụ kiện</option></select></div><div><label class="u-style-043">Mức hoa hồng</label><input class="input-field" id="partnerCommissionField" type="text" placeholder="Tỷ lệ hoa hồng"></div><div><label class="u-style-043">Website / Domain</label><input class="input-field" id="partnerDomainField" type="text" placeholder="Tên miền đối tác"></div></div><div class="u-style-044"><label class="u-style-043">Ghi chú hợp đồng / Mô tả đối tác</label><textarea class="textarea-field" id="partnerNoteField" placeholder="Thông tin hợp tác"></textarea></div><div class="modal-actions"><button class="btn-ghost" onclick="closePartnerModal('partnerEditModal')">Đóng</button><button class="btn-primary" onclick="savePartnerEdit()">Lưu thông tin</button></div></div></div>
 <div class="modal-overlay" id="partnerApproveModal"><div class="modal"><div class="modal-title" id="partnerApproveTitle">Duyệt đối tác mới</div><div class="modal-sub">Xác nhận trạng thái hợp tác của đối tác liên kết.</div><div class="u-style-045">Đối tác: <span id="partnerApproveName">GearVN Affiliate</span></div><div><label class="u-style-043">Ghi chú xử lý</label><textarea class="textarea-field" id="partnerApproveNote" placeholder="Nhập lý do xử lý hồ sơ đối tác"></textarea></div><div class="modal-actions"><button class="btn-ghost" onclick="closePartnerModal('partnerApproveModal')">Hủy</button><button class="btn-primary" id="partnerApproveAction" onclick="submitPartnerAction()">Xác nhận</button></div></div></div>
+  <script src="assets/js/common/toast.js"></script>
   <script src="assets/js/common/db.js"></script>
   <script src="assets/js/common/auth.js"></script>
   <script src="assets/js/pages/manage-partners.js"></script>
+
 

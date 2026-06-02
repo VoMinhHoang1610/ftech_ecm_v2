@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const note = document.getElementById('partnerNoteField').value.trim();
 
     if (!name || !email || !domain) {
-      alert('Vui lòng nhập tên đối tác, email liên hệ và website.');
+      showToast('Vui lòng nhập tên đối tác, email liên hệ và website.', 'warn');
       return;
     }
 
@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (editMode === 'add') {
       if (p) {
-        alert('Tên đối tác này đã tồn tại!');
+        showToast('Tên đối tác này đã tồn tại!', 'error');
         return;
       }
       p = {
@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function () {
     p.note = note;
 
     FTECHDB.savePartner(p);
-    alert(editMode === 'add' ? 'Đã thêm đối tác mới vào danh sách chờ duyệt.' : 'Đã cập nhật thông tin đối tác.');
+    showToast(editMode === 'add' ? 'Đã thêm đối tác mới vào danh sách chờ duyệt.' : 'Đã cập nhật thông tin đối tác.', 'success');
     window.closePartnerModal('partnerEditModal');
     renderAll();
   };
@@ -150,7 +150,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     FTECHDB.savePartner(p);
-    alert(`Đã cập nhật trạng thái của đối tác thành công.`);
+    showToast('Đã cập nhật trạng thái của đối tác thành công.', 'success');
     window.closePartnerModal('partnerApproveModal');
     renderAll();
   };
