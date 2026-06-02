@@ -230,3 +230,44 @@ PR de xuat:
 - Base: `develop`
 - Title: `Hoan thien demo FTECH`
 - Mo ta: neu ro da test static server, node check, dotnet build, va checklist demo.
+
+## 11. Cap nhat tien do thuc te (02/06/2026)
+
+### 11.1 Chenh lech tai lieu va code hien tai
+
+- `TASK.md` muc Nhi ghi "Duyet binh luan" trong `manage-posts.*`, nhung code hien tai da tach thanh trang rieng `manage-comments.*`.
+- Quy uoc duoc chot: giu "Duyet binh luan" la menu rieng duoi "Duyet bai viet" trong sidebar Super Admin, khong tron vao `manage-posts.*`.
+
+### 11.2 Tien do task Nhi
+
+- [x] Bo sung hint/validation UI cho affiliate link khi gui duyet trong `content-manager.js` (root + mirror), bo alert tho o luong nay.
+- [x] Trang chu search/loc that trong `trangchu.js` (dang co state query/tab/brand/sort va empty state).
+- [x] Product comment area da co notice "dang cho duyet", public chi hien comment approved.
+- [x] Profile tab comment da hien trang thai Cho duyet/Da duyet/Tu choi va ly do tu choi.
+- [x] Co trang rieng `manage-comments.html` + `manage-comments.js` cho duyet comment.
+- [ ] Polish UI man demo chinh (`product.html`, `reviewModule.html`, `dashboard.html` va CSS lien quan) de giam tran text/spacings.
+- [ ] Empty state/table polish cho `manage-posts.html`, `manage-affiliates.html`, `manage-partners.html`, `manage-accounts.html`.
+
+### 11.3 Tien do task Hoang
+
+- [x] `db.js`: da co comment moderation data/logic (`status`, `approveComment`, `rejectComment`, `getCommentSummary`...).
+- [x] `product.js`: comment moi vao `pending`, render public chi `approved`, count theo approved.
+- [x] `manage-posts.js`: affiliate preview/count da filter theo tung bai (`getAffiliates(post.id)`).
+- [x] `postManager.js`/`content-manager.js`: author consistency theo username, chan gui duyet khi khong co affiliate active.
+- [x] `reviewModule.js`: da co gate login customer + chan duplicate review theo user/post.
+- [ ] Dong bo KPI click logs giua `dashboard.js` / `manage-affiliates.js` / `manage-partners.js` con chua xong toan dien.
+- [ ] Loai bo alert/confirm/prompt tho o cac luong chinh con lai.
+- [ ] Build/checklist ky thuat tong (`node --check` nhom file chinh, `dotnet build`) theo checklist nghiem thu.
+
+### 11.4 Viec tiep theo uu tien cao nhat
+
+1. P1 - On dinh auth guard khong "vang" khoi trang quan tri:
+   - `assets/js/common/auth.js` + mirror
+   - Muc tieu: khong alert tho, khong xoa session sai, dieu huong dung theo role.
+2. P1 - Dong bo KPI click logs cho affiliate/partner/dashboard:
+   - `assets/js/pages/manage-affiliates.js`
+   - `assets/js/pages/manage-partners.js`
+   - `assets/js/pages/dashboard.js`
+3. P1 - Giam alert/confirm/prompt luong chinh con lai:
+   - uu tien `reviewModule.js`, `manage-accounts.js`, `manage-partners.js`, `dashboard.js`.
+4. P2 - Polish UI + empty state de demo muot.
