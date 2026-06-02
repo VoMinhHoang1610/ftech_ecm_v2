@@ -159,7 +159,7 @@ document.addEventListener('DOMContentLoaded', function () {
     `;
 
     // Render affiliate links dynamically
-    const affiliates = FTECHDB.getAffiliates();
+    const affiliates = FTECHDB.getAffiliates(post.id);
     const affSection = modal.querySelector('.pv-aff-section');
     if (affSection) {
       if (affiliates.length > 0) {
@@ -462,8 +462,9 @@ document.addEventListener('DOMContentLoaded', function () {
       const hasPhoto = post.image ? `<img src="${post.image}" alt="${post.title}">` : '📝';
       const viewsDisplay = post.views >= 1000 ? `${(post.views / 1000).toFixed(1)}K` : post.views;
       
-      // Calculate active affiliates for mock meta or actual affiliates
-      const affCount = FTECHDB.getAffiliates().length;
+      const postAffiliates = FTECHDB.getAffiliates(post.id);
+      const affCount = postAffiliates.length;
+      const affClicks = postAffiliates.reduce((sum, affiliate) => sum + (Number(affiliate.clicks) || 0), 0);
       
       // Action buttons depending on state
       let actions = '';
@@ -508,7 +509,7 @@ document.addEventListener('DOMContentLoaded', function () {
           <div><span class="cat-tag">${post.category}</span></div>
           <div><span class="sp ${statusClass}">${statusLabel}</span></div>
           <div class="metric">${viewsDisplay}</div>
-          <div class="metric metric-g">${post.status === 'approved' ? Math.floor(post.views * 0.08) : '-'}</div>
+          <div class="metric metric-g">${affCount > 0 ? affClicks.toLocaleString('vi-VN') : '-'}</div>
           <div class="u-style-065">${post.date}</div>
           <div class="row-acts">${actions}</div>
         </div>
