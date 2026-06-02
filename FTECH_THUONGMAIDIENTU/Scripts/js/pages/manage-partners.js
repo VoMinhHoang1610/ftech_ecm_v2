@@ -319,6 +319,14 @@ document.addEventListener('DOMContentLoaded', function () {
           const pClicks = clickLogs.filter(log => log.partnerId === p.id && log.status === 'valid').length;
           const conversions = Math.floor(pClicks * 0.06);
 
+          // Tính CVR realtime từ click logs
+          const partnerAffiliates = FTECHDB.getAffiliates().filter(a => a.partnerId === p.id);
+          const partnerPostViews = partnerAffiliates.reduce((sum, aff) => {
+            const post = posts.find(pt => pt.id === aff.postId);
+            return sum + (post ? Number(post.views) || 0 : 0);
+          }, 0);
+          const computedCvr = partnerPostViews > 0 ? `${((pClicks / partnerPostViews) * 100).toFixed(1)}%` : '0%';
+
           return `
             <div class="partner-card pc-${p.status}">
               <div class="pc-head">
@@ -341,7 +349,7 @@ document.addEventListener('DOMContentLoaded', function () {
                   <div class="pcm-label">Chuyển đổi</div>
                 </div>
                 <div class="pcm">
-                  <div class="pcm-val u-style-031">${p.cvr}</div>
+                  <div class="pcm-val u-style-031">${computedCvr}</div>
                   <div class="pcm-label">CVR</div>
                 </div>
               </div>
@@ -397,6 +405,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
           const pClicks = clickLogs.filter(log => log.partnerId === p.id && log.status === 'valid').length;
 
+          // Tính CVR realtime từ click logs
+          const partnerAffiliates = FTECHDB.getAffiliates().filter(a => a.partnerId === p.id);
+          const partnerPostViews = partnerAffiliates.reduce((sum, aff) => {
+            const post = posts.find(pt => pt.id === aff.postId);
+            return sum + (post ? Number(post.views) || 0 : 0);
+          }, 0);
+          const computedCvr = partnerPostViews > 0 ? `${((pClicks / partnerPostViews) * 100).toFixed(1)}%` : '0%';
+
           return `
             <div class="t-row">
               <div class="partner-cell">
@@ -409,7 +425,7 @@ document.addEventListener('DOMContentLoaded', function () {
               <div class="cell-muted">${p.category}</div>
               <div class="cell-muted">${p.email}</div>
               <div class="metric-g">${pClicks.toLocaleString()}</div>
-              <div class="metric-a">${p.cvr}</div>
+              <div class="metric-a">${computedCvr}</div>
               <div class="metric-p">${p.commission}</div>
               <div><span class="pc-status ${statusClass}">${statusLabel}</span></div>
               <div class="u-style-061">${actionButtons}</div>
