@@ -46,7 +46,17 @@
   7. PR
   8. merge vao `develop`
 
-## 5. Lenh git tham khao
+## 5. Quy tac actor, layout va menu
+
+- Content Manager va Affiliate Manager thuoc nhom Admin: logo sidebar dung `FTECH Admin` giong Super Admin.
+- Moi actor phai giu cung frame header/navbar/sidebar; menu active dung trang hien tai.
+- Content Manager sidebar toi thieu: `Tao bai viet`, `Bai viet cua toi`.
+- Super Admin: `Duyet bai viet` va `Duyet binh luan` la 2 trang rieng (`manage-posts.html`, `manage-comments.html`).
+- Super Admin khong co nut `Them doi tac`; Affiliate Manager moi co chuc nang them doi tac.
+- Trang `manage-accounts.html` chia 2 bang: tai khoan admin va tai khoan nguoi dung.
+- Khong hien thi text huong dan noi bo/placeholder danh cho nguoi code tren giao dien nguoi dung.
+
+## 6. Lenh git tham khao
 
 ```bash
 git checkout develop

@@ -13,7 +13,6 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   // Filter dropdowns
-  document.getElementById('filterRole').addEventListener('change', renderAll);
   document.getElementById('filterStatus').addEventListener('change', renderAll);
   document.getElementById('filterSort').addEventListener('change', renderAll);
 
@@ -141,37 +140,17 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById(id).classList.remove('open');
   };
 
-  function renderAll() {
-    const accounts = FTECHDB.getAccounts();
-
-    // 1. Render KPIs
-    const totalCount = accounts.length;
-    const activeCount = accounts.filter(a => a.status !== 'locked').length;
-    const partnerCount = accounts.filter(a => a.role === 'partner').length;
-    const lockedCount = accounts.filter(a => a.status === 'locked').length;
-
-    document.querySelector('.sv-total').textContent = totalCount;
-    document.querySelector('.sv-active').textContent = activeCount;
-    document.querySelector('.sv-partner').textContent = partnerCount;
-    document.querySelector('.sv-locked').textContent = lockedCount;
-
-    // 2. Filter list
+  function filterAccounts(accounts) {
     const searchQuery = document.getElementById('searchQuery').value.toLowerCase().trim();
-    const filterRole = document.getElementById('filterRole').value;
     const filterStatus = document.getElementById('filterStatus').value;
     const filterSort = document.getElementById('filterSort').value;
 
     let filtered = accounts.filter(a => {
-      // Role filter
-      if (filterRole && a.role !== filterRole) return false;
-
-      // Status filter
       if (filterStatus) {
         if (filterStatus === 'locked' && a.status !== 'locked') return false;
         if (filterStatus === 'active' && a.status === 'locked') return false;
       }
 
-      // Search Query
       if (searchQuery) {
         const nameMatch = (a.name || '').toLowerCase().includes(searchQuery);
         const userMatch = (a.username || '').toLowerCase().includes(searchQuery);
@@ -182,26 +161,15 @@ document.addEventListener('DOMContentLoaded', function () {
       return true;
     });
 
-    // 3. Sort list
     if (filterSort === 'alphabetical') {
       filtered.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
     }
 
-    // 4. Render Table Body
-    const tbody = document.getElementById('accountsTableBody');
-    if (!tbody) return;
+    return filtered;
+  }
 
-    if (filtered.length === 0) {
-      tbody.innerHTML = `
-        <div style="padding: 30px; text-align: center; color: var(--muted); font-size: 14px;">
-          📭 Không tìm thấy tài khoản quản trị nào khớp bộ lọc.
-        </div>
-      `;
-      document.querySelector('.pag-info').textContent = `Hiển thị 0 tài khoản`;
-      return;
-    }
-
-    tbody.innerHTML = filtered.map(acc => {
+  function renderAccountRows(accounts) {
+    return accounts.map(acc => {
       const isLocked = acc.status === 'locked';
       const statusLabel = isLocked ? 'Bị khóa' : 'Hoạt động';
       const statusClass = isLocked ? 'pending' : 'active'; // pending has yellow/orange, active has green style
@@ -242,7 +210,44 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>
       `;
     }).join('');
+  }
 
-    document.querySelector('.pag-info').textContent = `Hiển thị 1-${filtered.length} / ${filtered.length} tài khoản`;
+  function renderAll() {
+    const accounts = FTECHDB.getAccounts();
+    const adminAccounts = accounts.filter(a => a.role !== 'customer');
+    const userAccounts = accounts.filter(a => a.role === 'customer');
+
+    const totalCount = accounts.length;
+    const activeCount = accounts.filter(a => a.status !== 'locked').length;
+    const partnerCount = accounts.filter(a => a.role === 'partner').length;
+    const lockedCount = accounts.filter(a => a.status === 'locked').length;
+
+    document.querySelector('.sv-total').textContent = totalCount;
+    document.querySelector('.sv-active').textContent = activeCount;
+    document.querySelector('.sv-partner').textContent = partnerCount;
+    document.querySelector('.sv-locked').textContent = lockedCount;
+
+    const filteredAdmin = filterAccounts(adminAccounts);
+    const filteredUsers = filterAccounts(userAccounts);
+
+    const adminBody = document.getElementById('adminAccountsTableBody');
+    const userBody = document.getElementById('userAccountsTableBody');
+    const pagInfo = document.getElementById('accountsPagInfo');
+
+    if (adminBody) {
+      adminBody.innerHTML = filteredAdmin.length
+        ? renderAccountRows(filteredAdmin)
+        : '<div style="padding: 24px; text-align: center; color: var(--muted); font-size: 14px;">Không có tài khoản admin khớp bộ lọc.</div>';
+    }
+
+    if (userBody) {
+      userBody.innerHTML = filteredUsers.length
+        ? renderAccountRows(filteredUsers)
+        : '<div style="padding: 24px; text-align: center; color: var(--muted); font-size: 14px;">Không có tài khoản người dùng khớp bộ lọc.</div>';
+    }
+
+    if (pagInfo) {
+      pagInfo.textContent = `Admin: ${filteredAdmin.length} · Người dùng: ${filteredUsers.length}`;
+    }
   }
 });

@@ -4,8 +4,6 @@ document.addEventListener('DOMContentLoaded', function () {
   let selectedStatus = 'all';
   let currentRejectPostId = null;
   let currentEditPostId = null;
-  let currentRejectCommentId = null;
-
   // Render metrics and list on load
   renderAll();
 
@@ -236,120 +234,6 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById(id).classList.remove('open');
   };
 
-  function ensureCommentModerationUI() {
-    if (document.getElementById('commentModerationList')) return;
-    const tableWrap = document.querySelector('.table-wrap');
-    if (!tableWrap) return;
-
-    tableWrap.insertAdjacentHTML('afterend', `
-      <section class="comment-moderation">
-        <div class="cm-head">
-          <div>
-            <div class="cm-title">Duyet binh luan</div>
-            <div class="cm-sub">Chi binh luan da duyet moi hien thi cong khai o trang san pham.</div>
-          </div>
-          <div class="cm-summary" id="commentSummary">0 cho duyet</div>
-        </div>
-        <div id="commentModerationList"></div>
-      </section>
-    `);
-
-    document.body.insertAdjacentHTML('beforeend', `
-      <div class="modal-overlay" id="rejectCommentModal">
-        <div class="modal">
-          <div class="modal-title">Tu choi binh luan</div>
-          <div class="modal-sub">Nhap ly do de nguoi dung thay trong trang ho so.</div>
-          <div class="modal-post-ref"><span id="rejectCommentRef">Binh luan</span></div>
-          <label class="fl">Ly do tu choi <span class="u-style-046">*</span></label>
-          <textarea class="modal-ta" id="rejectCommentReason" placeholder="Vi du: noi dung trung lap, ngon tu chua phu hop..."></textarea>
-          <div class="modal-actions">
-            <button class="modal-btn-cancel" onclick="closeModal('rejectCommentModal')">Huy</button>
-            <button class="modal-btn-confirm" onclick="confirmRejectComment()">Gui tu choi</button>
-          </div>
-        </div>
-      </div>
-    `);
-  }
-
-  function commentStatusLabel(status) {
-    if (status === 'approved') return 'Da duyet';
-    if (status === 'rejected') return 'Tu choi';
-    return 'Cho duyet';
-  }
-
-  function renderCommentModeration() {
-    ensureCommentModerationUI();
-    const list = document.getElementById('commentModerationList');
-    const summaryEl = document.getElementById('commentSummary');
-    if (!list) return;
-
-    const comments = FTECHDB.getComments();
-    const posts = FTECHDB.getPosts();
-    const summary = FTECHDB.getCommentSummary();
-    if (summaryEl) {
-      summaryEl.textContent = `${summary.pending} cho duyet - ${summary.approved} da duyet - ${summary.rejected} tu choi`;
-    }
-
-    const sorted = comments.slice().sort((a, b) => {
-      const weight = { pending: 0, approved: 1, rejected: 2 };
-      return (weight[a.status] || 9) - (weight[b.status] || 9);
-    });
-
-    if (sorted.length === 0) {
-      list.innerHTML = '<div class="cm-empty">Chua co binh luan nao trong mock DB.</div>';
-      return;
-    }
-
-    list.innerHTML = sorted.map(comment => {
-      const post = posts.find(p => p.id === comment.postId);
-      const statusClass = `cm-${comment.status || 'pending'}`;
-      const actions = comment.status === 'pending' ? `
-        <button class="act act-approve" onclick="approveComment('${comment.id}')" title="Duyet binh luan">✓</button>
-        <button class="act act-reject" onclick="openRejectComment('${comment.id}')" title="Tu choi binh luan">×</button>
-      ` : '';
-      return `
-        <div class="cm-item">
-          <div>
-            <div class="cm-meta"><strong>${comment.name}</strong> - ${comment.date} - ${post ? post.title : comment.postId}</div>
-            <div class="cm-text">${comment.text}</div>
-            ${comment.rejectReason ? `<div class="cm-reason">Ly do tu choi: ${comment.rejectReason}</div>` : ''}
-          </div>
-          <div class="cm-actions">
-            <span class="cm-status ${statusClass}">${commentStatusLabel(comment.status)}</span>
-            ${actions}
-          </div>
-        </div>
-      `;
-    }).join('');
-  }
-
-  window.approveComment = function (id) {
-    FTECHDB.approveComment(id);
-    renderAll();
-  };
-
-  window.openRejectComment = function (id) {
-    const comment = FTECHDB.getComments().find(c => String(c.id) === String(id));
-    if (!comment) return;
-    currentRejectCommentId = id;
-    const ref = document.getElementById('rejectCommentRef');
-    if (ref) ref.textContent = comment.text;
-    const reason = document.getElementById('rejectCommentReason');
-    if (reason) reason.value = '';
-    document.getElementById('rejectCommentModal').classList.add('open');
-  };
-
-  window.confirmRejectComment = function () {
-    const reason = document.getElementById('rejectCommentReason').value.trim();
-    if (!reason) {
-      alert('Vui long nhap ly do tu choi binh luan.');
-      return;
-    }
-    FTECHDB.rejectComment(currentRejectCommentId, reason);
-    window.closeModal('rejectCommentModal');
-    renderAll();
-  };
-
   // Setup modal close on overlay click
   document.querySelectorAll('.modal-overlay').forEach(m => m.addEventListener('click', function (e) {
     if (e.target === this) this.classList.remove('open');
@@ -517,6 +401,5 @@ document.addEventListener('DOMContentLoaded', function () {
     }).join('');
 
     document.querySelector('.pag-info').textContent = `Hiển thị 1-${filtered.length} / ${filtered.length} bài viết`;
-    renderCommentModeration();
   }
 });
