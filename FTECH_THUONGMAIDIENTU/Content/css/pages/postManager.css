@@ -1,4 +1,4 @@
-﻿:root {
+:root {
       --black:#2a2f5f; --surface:#f3f1ff; --card:#ffffff; --card2:#ebe7ff; --border:rgba(76,84,170,0.14); --border2:rgba(76,84,170,0.24);
       --accent:#4a7dff; --accent2:#8a5bff; --green:#1bcf8a; --orange:#f59e0b; --red:#ef4444; --yellow:#f59e0b; --purple:#8a5bff;
       --text:#303a75; --body:#5d6897; --muted:#8a93b8; --radius:14px; --heading-font:'Poppins','Segoe UI',Arial,Helvetica,sans-serif;
@@ -121,3 +121,18 @@
     .act-btn{padding:4px 10px;border-radius:6px;border:1px solid var(--border);background:transparent;color:#8a93b8;font-size:11px;cursor:pointer;transition:all .2s;font-family:'Poppins',sans-serif;}
     .act-btn:hover{border-color:rgba(74,125,255,.25);color:#4a7dff;}
     @media(max-width:1000px){.editor-layout{grid-template-columns:1fr;}.table-head,.table-row{grid-template-columns:2fr 1fr 100px;} .post-cat,.post-views{display:none;}.editor-topbar{align-items:flex-start;flex-direction:column;gap:14px;}.topbar-actions{flex-wrap:wrap;width:100%;}}
+    
+    .aff-validation-msg {
+      background: rgba(239, 68, 68, 0.08);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      color: var(--red);
+      font-weight: 500;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 13px;
+      margin-top: 10px;
+    }
+    .input-error {
+      border-color: var(--red) !important;
+      background-color: rgba(239, 68, 68, 0.03) !important;
+    }
