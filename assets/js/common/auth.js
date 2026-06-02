@@ -83,9 +83,9 @@
     if (!currentUser || !window.FTECHDB) return;
     const account = window.FTECHDB.getAccount(currentUser);
     if (!account || account.status === 'locked') {
-      alert('⚠️ Phiên đăng nhập đã bị vô hiệu hóa vì tài khoản bị khóa hoặc không còn tồn tại.');
+      const lockReason = account ? account.lockReason || 'Vi phạm chính sách cộng đồng.' : 'Tài khoản không tồn tại.';
       clearAuthStorage();
-      window.location.href = getTargetUrl('login.html');
+      window.location.href = `${getTargetUrl('login.html')}?reason=locked&username=${encodeURIComponent(currentUser)}&lockReason=${encodeURIComponent(lockReason)}`;
     }
   }
 

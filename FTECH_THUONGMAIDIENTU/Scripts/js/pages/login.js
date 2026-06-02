@@ -36,9 +36,25 @@ const roleConfig = {
 document.addEventListener('DOMContentLoaded', () => {
   const identifierInput = document.getElementById('identifier');
   const passwordInput = document.getElementById('loginPassword');
-  if (identifierInput && passwordInput) {
-    identifierInput.value = 'customer';
-    passwordInput.value = '123';
+  
+  const urlParams = new URLSearchParams(window.location.search);
+  const reason = urlParams.get('reason');
+  const username = urlParams.get('username');
+  const lockReason = urlParams.get('lockReason') || 'Vi phạm chính sách cộng đồng.';
+
+  if (reason === 'locked' && username) {
+    const errorToast = document.getElementById('toastError');
+    if (errorToast) {
+      errorToast.innerHTML = `⚠️ Tài khoản <strong>@${username}</strong> hiện đang bị khóa.<br><span style="font-size: 12px; font-weight: 500; opacity: 0.9; display: inline-block; margin-top: 4px;">Lý do: ${lockReason}</span>`;
+      errorToast.classList.add('show');
+    }
+    if (identifierInput) identifierInput.value = username;
+    if (passwordInput) passwordInput.value = '';
+  } else {
+    if (identifierInput && passwordInput) {
+      identifierInput.value = 'customer';
+      passwordInput.value = '123';
+    }
   }
 });
 
