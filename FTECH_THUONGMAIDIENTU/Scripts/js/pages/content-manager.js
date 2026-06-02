@@ -3,6 +3,15 @@ let currentDeleteId = '';
 let currentSendId = '';
 let currentEditId = '';
 
+function showSendFeedback(message, isError = false) {
+  const sendModal = document.getElementById('sendModal');
+  if (!sendModal) return;
+  const sub = sendModal.querySelector('.ms-sub');
+  if (!sub) return;
+  sub.textContent = message;
+  sub.style.color = isError ? '#b91c1c' : 'var(--body)';
+}
+
 /* ── RENDER DYNAMIC POST ROWS ── */
 function renderPostRows(statusFilter = 'all') {
   const posts = window.FTECHDB.getPosts();
@@ -180,6 +189,7 @@ function openSend(id) {
   if (!post) return;
   currentSendId = id;
   document.getElementById('sendPostName').textContent = post.title;
+  showSendFeedback('Bài viết sẽ được gửi đến Super Admin để xét duyệt trước khi xuất bản. Bạn sẽ không thể chỉnh sửa khi đang chờ duyệt.');
   document.getElementById('sendModal').classList.add('open');
 }
 
@@ -187,14 +197,14 @@ function confirmSend() {
   if (!currentSendId) return;
   const activeAffiliates = window.FTECHDB.getAffiliates(currentSendId).filter(a => a.status === 'active');
   if (activeAffiliates.length === 0) {
-    alert('Bai viet can co it nhat 1 affiliate link dang hoat dong truoc khi gui duyet.');
+    showSendFeedback('Bài viết cần có ít nhất 1 liên kết tiếp thị (affiliate link) hoạt động trước khi gửi duyệt.', true);
     return;
   }
   window.FTECHDB.updateStatus(currentSendId, 'pending');
+  showSendFeedback('Gửi duyệt thành công. Bài viết đã chuyển sang trạng thái "Chờ duyệt".');
   closeModal('sendModal');
   closeModal('previewModal');
   renderPostRows();
-  alert('📤 Gửi duyệt thành công! Bài viết đã chuyển sang trạng thái "Chờ duyệt".');
 }
 
 /* ── DELETE MODAL ── */
