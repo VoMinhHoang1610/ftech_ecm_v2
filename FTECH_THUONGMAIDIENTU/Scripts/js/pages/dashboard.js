@@ -154,10 +154,12 @@ function updateDashboardData() {
     const lastPost = posts[0] || { title: 'Review iPhone 16 Pro Max', date: 'vừa qua' };
     const lastUser = accounts[accounts.length - 1] || { name: 'Thành viên mới' };
     
+    const pendingCommCount = window.FTECHDB.getCommentSummary ? window.FTECHDB.getCommentSummary().pending : 0;
+    
     actList.innerHTML = `
       <div class="act-item"><div class="act-dot" style="background: var(--accent);"></div><div class="act-text">Bài viết mới nhất: <strong>${lastPost.title}</strong> (${lastPost.status})</div><div class="act-time">${lastPost.date}</div></div>
       <div class="act-item"><div class="act-dot" style="background: var(--green);"></div><div class="act-text">Thành viên đăng ký mới: <strong>${lastUser.name}</strong> (vai trò: ${lastUser.role})</div><div class="act-time">Vừa đăng ký</div></div>
-      <div class="act-item"><div class="act-dot" style="background: var(--orange);"></div><div class="act-text">Hiện có <strong>${pendingCount} bài viết chờ duyệt</strong> và <strong>${commissionSummary.suspiciousClicks} click nghi ngờ</strong>.</div><div class="act-time">Cần kiểm duyệt</div></div>
+      <div class="act-item"><div class="act-dot" style="background: var(--orange);"></div><div class="act-text">Hiện có <strong>${pendingCount} bài viết</strong> và <strong>${pendingCommCount} bình luận chờ duyệt</strong>, cùng <strong>${commissionSummary.suspiciousClicks} click nghi ngờ</strong>.</div><div class="act-time">Cần kiểm duyệt</div></div>
     `;
   }
 
