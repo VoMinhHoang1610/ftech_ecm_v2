@@ -1,7 +1,7 @@
 <html lang="vi"><head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FTECH Admin - Quản Lý Affiliate Links</title>
+  <title>FTECH - Quản Lý Affiliate Links</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/pages/manage-affiliates.css">
   <link rel="stylesheet" href="assets/css/common/inline-utilities.css">
@@ -9,9 +9,13 @@
 </head>
 <body>
 <div class="sidebar">
-  <div class="sb-logo"><a href="manage-affiliates.html" class="logo"><span class="logo-badge">F</span>FTECH Admin</a></div>
+  <div class="sb-logo"><a href="manage-affiliates.html" class="logo"><span class="logo-badge">F</span>FTECH</a></div>
   <div class="sb-label">Affiliate Manager</div>
-  <a href="manage-affiliates.html" class="sb-item active"><span class="si">🔗</span>Affiliate links</a>
+  <a href="#affiliate-links" class="sb-item active"><span class="si">🔗</span>Affiliate links</a>
+  <a href="#click-tracking" class="sb-item"><span class="si">👁</span>Lượt click</a>
+  <a href="#performance-summary" class="sb-item"><span class="si">📊</span>Hiệu suất</a>
+  <a href="#commission-settings" class="sb-item"><span class="si">%</span>Hoa hồng</a>
+  <a href="#partner-links" class="sb-item"><span class="si">🤝</span>Đối tác liên kết</a>
   <div class="sb-bottom"><div class="sb-user"><div class="sb-avatar"><img src="https://i.pravatar.cc/120?img=14" alt="Võ Minh Hoàng"></div><div><div class="sb-user-name">Võ Minh Hoàng</div><div class="sb-user-role">Affiliate Manager</div></div></div></div>
 </div>
 <div class="main">
@@ -21,14 +25,14 @@
     <div class="topbar-actions"><button class="btn-ghost" type="button">Xuất báo cáo</button><button class="btn-primary" type="button" onclick="openAffiliateModal('create')">+ Tạo link mới</button></div>
   </div>
   <div class="content">
-    <div class="stat-row">
+    <div class="stat-row" id="performance-summary">
       <div class="stat-card"><div class="stat-label">Tổng link</div><div class="stat-val sc-a sv-total-links">486</div><div class="stat-sub">Trong hệ thống</div></div>
       <div class="stat-card"><div class="stat-label">Tổng click</div><div class="stat-val sc-g sv-total-clicks">24.8K</div><div class="stat-sub">Số lượt nhấp chuột</div></div>
       <div class="stat-card"><div class="stat-label">CTR trung bình</div><div class="stat-val sc-p sv-avg-ctr">4.2%</div><div class="stat-sub">Hiệu suất chuyển đổi</div></div>
       <div class="stat-card"><div class="stat-label">Hoa hồng ước tính</div><div class="stat-val sc-o sv-total-comm">14.2M₫</div><div class="stat-sub">Tháng này</div></div>
     </div>
 
-    <div class="config-card">
+    <div class="config-card" id="commission-settings">
       <div class="chart-head"><div class="chart-title">Cấu hình link affiliate</div><button class="btn-ghost" onclick="openCommissionModal()">Thiết lập hoa hồng</button></div>
       <div class="config-grid">
         <div class="config-box"><div class="config-label">Người tạo link</div><div class="config-value">Affiliate Manager</div></div>
@@ -40,7 +44,7 @@
 
     <div class="warning-banner"><div>⚠️</div><div class="wb-text"><strong>3 link affiliate bị lỗi</strong> — Liên kết trỏ đến trang không tồn tại hoặc đã hết hạn. Kiểm tra và cập nhật để tránh mất doanh thu.</div><button class="btn-ghost">Xem link lỗi</button></div>
 
-    <div class="filter-wrap">
+    <div class="filter-wrap" id="partner-links">
       <button class="filter-chip active" data-filter="all" onclick="setF(this)">Tất cả (486)</button>
       <button class="filter-chip" data-filter="product" onclick="setF(this)">Theo sản phẩm (210)</button>
       <button class="filter-chip" data-filter="post" onclick="setF(this)">Theo bài viết (180)</button>
@@ -50,9 +54,9 @@
       <select class="fsel" id="filterSort"><option value="clicks">Click cao nhất</option><option value="newest">Mới nhất</option></select>
     </div>
 
-    <div class="table-wrap">
+    <div class="table-wrap" id="affiliate-links">
       <div class="t-head">
-        <div class="th">Link / Tên</div><div class="th">Đối tác</div><div class="th">Gắn vào</div><div class="th">Click</div><div class="th">CVR</div><div class="th">Ngày tạo</div><div class="th">HH%</div><div class="th">Trạng thái</div><div class="th">Thao tác</div>
+        <div class="th">Link / Tên</div><div class="th">Đối tác</div><div class="th">Gắn vào</div><div class="th" id="click-tracking">Click</div><div class="th">CVR</div><div class="th">Ngày tạo</div><div class="th">HH%</div><div class="th">Trạng thái</div><div class="th">Thao tác</div>
       </div>
       <div id="affiliatesTableBody"></div>
       <div class="pagination"><div class="pag-info">Hiển thị 1-5 / 5 links</div></div>
@@ -60,8 +64,8 @@
 </div>
 </div>
 
-<div class="modal-overlay" id="affiliateModal"><div class="modal"><div class="modal-title" id="affiliateModalTitle">Tạo link affiliate mới</div><div class="modal-sub">Biểu mẫu này dùng cho kịch bản tạo mới, cập nhật hoặc sửa link affiliate bị lỗi.</div><div class="form-grid"><div><label class="u-style-043">Tên link / sản phẩm</label><input class="input-field" id="affiliateNameField" type="text" placeholder="Ví dụ: iPhone 16 - Shopee"></div><div><label class="u-style-043">Đối tác</label><select class="select-field" id="affiliatePartnerField"><option value="Shopee Affiliate">Shopee Affiliate</option><option value="Lazada Partner">Lazada Partner</option><option value="Tiki Trading">Tiki Trading</option></select></div><div><label class="u-style-043">Gắn vào bài viết</label><input class="input-field" id="affiliatePostField" type="text" placeholder="Ví dụ: Review iPhone 16 Pro Max"></div><div><label class="u-style-043">Trạng thái</label><select class="select-field" id="affiliateStatusField"><option value="active">Hoạt động</option><option value="inactive">Tắt</option><option value="error">Link lỗi</option></select></div></div><div class="u-style-044"><label class="u-style-043">Affiliate URL</label><input class="input-field" id="affiliateUrlField" type="text" placeholder="https://shopee.vn/product/..."></div><div class="u-style-044"><label class="u-style-043">Ghi chú / URL ảnh sản phẩm</label><input class="input-field" id="affiliateImageField" type="text" placeholder="Ví dụ: https://images.unsplash.com/photo-..."></div><div class="u-style-044"><label class="u-style-043">Ghi chú thêm</label><textarea class="textarea-field" id="affiliateNoteField" placeholder="Ví dụ: link này dùng cho phiên bản 256GB, ưu tiên hiển thị ở cuối bài review..."></textarea></div><div class="modal-actions"><button class="btn-ghost" onclick="closeAffiliateModal('affiliateModal')">Đóng</button><button class="btn-primary" onclick="saveAffiliateLink()">Lưu link</button></div></div></div>
-<div class="modal-overlay" id="commissionModal"><div class="modal"><div class="modal-title">Thiết lập tỷ lệ hoa hồng</div><div class="modal-sub">Biểu mẫu này dùng cho kịch bản thiết lập commission theo đối tác hoặc nhóm sản phẩm.</div><div class="form-grid"><div><label class="u-style-043">Đối tác</label><select class="select-field" id="commissionPartnerField"><option>Shopee Affiliate</option><option>Lazada Partner</option><option>Tiki Trading</option></select></div><div><label class="u-style-043">Nhóm sản phẩm</label><select class="select-field"><option>Điện thoại</option><option>Laptop</option><option>Phụ kiện</option></select></div><div><label class="u-style-043">Hoa hồng tối thiểu</label><input class="input-field" value="4%" type="text"></div><div><label class="u-style-043">Hoa hồng tối đa</label><input class="input-field" value="8%" type="text"></div></div><div class="u-style-044"><label class="u-style-043">Ghi chú áp dụng</label><textarea class="textarea-field" placeholder="Ví dụ: áp dụng từ 10/04/2026, ưu tiên sản phẩm Apple và Samsung..."></textarea></div><div class="modal-actions"><button class="btn-ghost" onclick="closeAffiliateModal('commissionModal')">Đóng</button><button class="btn-primary" onclick="saveCommission()">Lưu commission</button></div></div></div>
+<div class="modal-overlay" id="affiliateModal"><div class="modal"><div class="modal-title" id="affiliateModalTitle">Tạo link affiliate mới</div><div class="modal-sub">Nhập thông tin link affiliate để gắn với sản phẩm, bài viết và đối tác liên kết.</div><div class="form-grid"><div><label class="u-style-043">Tên link / sản phẩm</label><input class="input-field" id="affiliateNameField" type="text" placeholder="Tên sản phẩm hoặc link"></div><div><label class="u-style-043">Đối tác</label><select class="select-field" id="affiliatePartnerField"><option value="Shopee Affiliate">Shopee Affiliate</option><option value="Lazada Partner">Lazada Partner</option><option value="Tiki Trading">Tiki Trading</option></select></div><div><label class="u-style-043">Gắn vào bài viết</label><input class="input-field" id="affiliatePostField" type="text" placeholder="Tên bài viết liên quan"></div><div><label class="u-style-043">Trạng thái</label><select class="select-field" id="affiliateStatusField"><option value="active">Hoạt động</option><option value="inactive">Tắt</option><option value="error">Link lỗi</option></select></div></div><div class="u-style-044"><label class="u-style-043">Affiliate URL</label><input class="input-field" id="affiliateUrlField" type="text" placeholder="https://shopee.vn/product/..."></div><div class="u-style-044"><label class="u-style-043">URL ảnh sản phẩm</label><input class="input-field" id="affiliateImageField" type="text" placeholder="https://..."></div><div class="u-style-044"><label class="u-style-043">Ghi chú</label><textarea class="textarea-field" id="affiliateNoteField" placeholder="Thông tin bổ sung cho link affiliate"></textarea></div><div class="modal-actions"><button class="btn-ghost" onclick="closeAffiliateModal('affiliateModal')">Đóng</button><button class="btn-primary" onclick="saveAffiliateLink()">Lưu link</button></div></div></div>
+<div class="modal-overlay" id="commissionModal"><div class="modal"><div class="modal-title">Thiết lập tỷ lệ hoa hồng</div><div class="modal-sub">Thiết lập tỷ lệ hoa hồng theo đối tác và nhóm sản phẩm.</div><div class="form-grid"><div><label class="u-style-043">Đối tác</label><select class="select-field" id="commissionPartnerField"><option>Shopee Affiliate</option><option>Lazada Partner</option><option>Tiki Trading</option></select></div><div><label class="u-style-043">Nhóm sản phẩm</label><select class="select-field"><option>Điện thoại</option><option>Laptop</option><option>Phụ kiện</option></select></div><div><label class="u-style-043">Hoa hồng tối thiểu</label><input class="input-field" value="4%" type="text"></div><div><label class="u-style-043">Hoa hồng tối đa</label><input class="input-field" value="8%" type="text"></div></div><div class="u-style-044"><label class="u-style-043">Ghi chú áp dụng</label><textarea class="textarea-field" placeholder="Điều kiện áp dụng tỷ lệ hoa hồng"></textarea></div><div class="modal-actions"><button class="btn-ghost" onclick="closeAffiliateModal('commissionModal')">Đóng</button><button class="btn-primary" onclick="saveCommission()">Lưu commission</button></div></div></div>
   <script src="assets/js/common/db.js"></script>
   <script src="assets/js/common/auth.js"></script>
   <script src="assets/js/pages/manage-affiliates.js"></script>

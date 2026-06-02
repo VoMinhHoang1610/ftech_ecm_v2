@@ -37,6 +37,7 @@ function submitPost() {
   const content = document.getElementById('postContent').value.trim();
   const excerpt = document.getElementById('postExcerpt').value.trim();
   const status = document.getElementById('statusSelect').value;
+  const normalizedStatus = status === 'published' ? 'approved' : status;
 
   if (!title) {
     alert('Vui lòng nhập tiêu đề bài viết.');
@@ -46,6 +47,15 @@ function submitPost() {
   // Parse ID if editing
   const urlParams = new URLSearchParams(window.location.search);
   const editId = urlParams.get('id');
+  const existingPost = editId ? window.FTECHDB.getPost(editId) : null;
+
+  if (normalizedStatus !== 'draft') {
+    const activeAffiliates = editId ? window.FTECHDB.getAffiliates(editId).filter(a => a.status === 'active') : [];
+    if (activeAffiliates.length === 0) {
+      alert('Bai viet can co it nhat 1 affiliate link dang hoat dong truoc khi gui duyet.');
+      return;
+    }
+  }
 
   const postData = {
     title: title,
@@ -55,13 +65,14 @@ function submitPost() {
     category: 'Review',
     brand: 'FTECH',
     image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=900&q=80',
-    stars: 5,
-    author: localStorage.getItem('ftech_username') || 'Trương Thị Kiều Nhi'
+    stars: 5
   };
 
   if (editId) {
     postData.id = editId;
   }
+  postData.status = normalizedStatus;
+  postData.author = (existingPost && existingPost.author) || localStorage.getItem('ftech_user') || 'content';
 
   window.FTECHDB.savePost(postData);
   alert(editId ? '✅ Đã lưu thay đổi bài viết thành công!' : '✅ Đã tạo và gửi duyệt bài viết thành công!');

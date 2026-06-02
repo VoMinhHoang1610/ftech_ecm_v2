@@ -185,6 +185,11 @@ function openSend(id) {
 
 function confirmSend() {
   if (!currentSendId) return;
+  const activeAffiliates = window.FTECHDB.getAffiliates(currentSendId).filter(a => a.status === 'active');
+  if (activeAffiliates.length === 0) {
+    alert('Bai viet can co it nhat 1 affiliate link dang hoat dong truoc khi gui duyet.');
+    return;
+  }
   window.FTECHDB.updateStatus(currentSendId, 'pending');
   closeModal('sendModal');
   closeModal('previewModal');
