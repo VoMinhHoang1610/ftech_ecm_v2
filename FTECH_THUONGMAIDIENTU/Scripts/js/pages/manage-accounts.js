@@ -237,13 +237,13 @@ document.addEventListener('DOMContentLoaded', function () {
     if (adminBody) {
       adminBody.innerHTML = filteredAdmin.length
         ? renderAccountRows(filteredAdmin)
-        : '<div style="padding: 24px; text-align: center; color: var(--muted); font-size: 14px;">Không có tài khoản admin khớp bộ lọc.</div>';
+        : '<div class="t-row t-empty"><div class="empty-cell">Không có tài khoản admin khớp bộ lọc.</div></div>';
     }
 
     if (userBody) {
       userBody.innerHTML = filteredUsers.length
         ? renderAccountRows(filteredUsers)
-        : '<div style="padding: 24px; text-align: center; color: var(--muted); font-size: 14px;">Không có tài khoản người dùng khớp bộ lọc.</div>';
+        : '<div class="t-row t-empty"><div class="empty-cell">Không có tài khoản người dùng khớp bộ lọc.</div></div>';
     }
 
     if (pagInfo) {

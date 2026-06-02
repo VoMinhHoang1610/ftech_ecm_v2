@@ -424,8 +424,12 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!tbody) return;
 
     if (filtered.length === 0) {
-      tbody.innerHTML = `<div style="padding: 30px; text-align: center; color: var(--muted);">📭 Không tìm thấy link affiliate nào khớp bộ lọc.</div>`;
-      document.querySelector('.pag-info').textContent = `Hiển thị 0 / 0 links`;
+      tbody.innerHTML = `
+        <div class="t-row t-empty">
+          <div class="empty-cell">📭 Không tìm thấy link affiliate nào khớp bộ lọc.</div>
+        </div>
+      `;
+      document.querySelector('.pag-info').textContent = `Hiển thị 0 / ${affiliates.length} links`;
       return;
     }
 

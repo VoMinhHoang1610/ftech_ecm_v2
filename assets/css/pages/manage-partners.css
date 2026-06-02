@@ -89,6 +89,9 @@
     .t-row{border-bottom:1px solid var(--border);transition:background .2s;cursor:pointer;}
     .t-row:last-child{border-bottom:none;}
     .t-row:hover{background:rgba(76,84,170,.04);}
+    .t-row.t-empty{cursor:default;}
+    .t-row.t-empty:hover{background:transparent;}
+    .empty-cell{grid-column:1/-1;padding:20px 18px;text-align:center;color:var(--muted);font-size:14px;}
     .th{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#8a93b8;}
     .partner-cell{display:flex;align-items:center;gap:10px;}
     .p-av{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;background:rgba(138,91,255,.1);border:1px solid rgba(138,91,255,.2);overflow:hidden;}

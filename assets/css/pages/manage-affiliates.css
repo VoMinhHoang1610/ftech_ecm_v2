@@ -54,6 +54,9 @@
     .t-row{border-bottom:1px solid var(--border);transition:background .2s;}
     .t-row:last-child{border-bottom:none;}
     .t-row:hover{background:rgba(76,84,170,.04);}
+    .t-row.t-empty{cursor:default;}
+    .t-row.t-empty:hover{background:transparent;}
+    .empty-cell{grid-column:1/-1;padding:30px 18px;text-align:center;color:var(--muted);font-size:14px;}
     .th{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#8a93b8;}
     .link-title{font-size:13px;font-weight:600;margin-bottom:3px;line-height:1.4;}
     .product-link{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit;}
