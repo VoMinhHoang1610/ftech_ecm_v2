@@ -218,25 +218,37 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function renderAll() {
     const partners = FTECHDB.getPartners().filter(p => p.status !== 'rejected');
+    const clickLogs = FTECHDB.getClickLogs();
+    const posts = FTECHDB.getPosts();
 
     // 1. Calculate and update stats
     const totalCount = partners.length;
     const pendingCount = partners.filter(p => p.status === 'pending').length;
     
     let totalClicks = 0;
+    let totalComm = 0;
     let topClicks = 0;
     let topName = 'Shopee';
+    
     partners.forEach(p => {
-      const clickVal = parseInt(p.clicks) || 0;
-      totalClicks += clickVal;
-      if (clickVal > topClicks) {
-        topClicks = clickVal;
+      const pLogs = clickLogs.filter(log => log.partnerId === p.id && log.status === 'valid');
+      const pClicks = pLogs.length;
+      totalClicks += pClicks;
+      
+      const partnerComm = pLogs.reduce((sum, log) => {
+        const post = posts.find(postItem => postItem.id === log.postId);
+        return sum + ((post ? Number(post.price) || 0 : 0) * (Number(p.commissionRate) || 0));
+      }, 0);
+      totalComm += partnerComm;
+
+      if (pClicks > topClicks) {
+        topClicks = pClicks;
         topName = p.name.split(' ')[0]; // short name
       }
     });
 
     const displayClicks = totalClicks >= 1000 ? `${(totalClicks / 1000).toFixed(1)}K` : totalClicks;
-    const displayComm = `${(totalClicks * 1500).toLocaleString('vi-VN')}₫`; // estimate 1500đ per click
+    const displayComm = FTECHDB.formatMoney(totalComm);
 
     document.querySelector('.sv-total-partners').textContent = totalCount;
     document.querySelector('.sv-pending-partners').textContent = pendingCount;
@@ -304,7 +316,8 @@ document.addEventListener('DOMContentLoaded', function () {
             ? `<img src="${p.logo}" alt="${p.name}">` 
             : `<span style="font-size: 32px;">${p.logo}</span>`;
 
-          const conversions = Math.floor(p.clicks * 0.06);
+          const pClicks = clickLogs.filter(log => log.partnerId === p.id && log.status === 'valid').length;
+          const conversions = Math.floor(pClicks * 0.06);
 
           return `
             <div class="partner-card pc-${p.status}">
@@ -320,7 +333,7 @@ document.addEventListener('DOMContentLoaded', function () {
               </div>
               <div class="pc-metrics">
                 <div class="pcm">
-                  <div class="pcm-val u-style-023">${p.clicks.toLocaleString()}</div>
+                  <div class="pcm-val u-style-023">${pClicks.toLocaleString()}</div>
                   <div class="pcm-label">Lượt click</div>
                 </div>
                 <div class="pcm">
@@ -378,6 +391,8 @@ document.addEventListener('DOMContentLoaded', function () {
             `;
           }
 
+          const pClicks = clickLogs.filter(log => log.partnerId === p.id && log.status === 'valid').length;
+
           return `
             <div class="t-row">
               <div class="partner-cell">
@@ -389,7 +404,7 @@ document.addEventListener('DOMContentLoaded', function () {
               </div>
               <div class="cell-muted">${p.category}</div>
               <div class="cell-muted">${p.email}</div>
-              <div class="metric-g">${p.clicks.toLocaleString()}</div>
+              <div class="metric-g">${pClicks.toLocaleString()}</div>
               <div class="metric-a">${p.cvr}</div>
               <div class="metric-p">${p.commission}</div>
               <div><span class="pc-status ${statusClass}">${statusLabel}</span></div>

@@ -318,6 +318,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function renderAll() {
     const affiliates = FTECHDB.getAffiliates();
+    const clickLogs = FTECHDB.getClickLogs();
+    const posts = FTECHDB.getPosts();
+    const partners = FTECHDB.getPartners();
 
     // 1. Stats and metrics calculations
     const totalCount = affiliates.length;
@@ -329,9 +332,16 @@ document.addEventListener('DOMContentLoaded', function () {
     let totalClicks = 0;
     let sumCtr = 0;
     let ctrCount = 0;
+    let totalComm = 0;
 
     affiliates.forEach(a => {
-      totalClicks += parseInt(a.clicks) || 0;
+      const affClicks = clickLogs.filter(log => log.linkId === a.id && log.status === 'valid').length;
+      totalClicks += affClicks;
+
+      const post = posts.find(p => p.id === a.postId);
+      const partner = partners.find(p => p.id === a.partnerId);
+      totalComm += affClicks * (post ? Number(post.price) || 0 : 0) * (partner ? Number(partner.commissionRate) || 0 : 0);
+
       const cvrVal = parseFloat(a.cvr);
       if (!isNaN(cvrVal)) {
         sumCtr += cvrVal;
@@ -340,7 +350,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     const displayClicks = totalClicks >= 1000 ? `${(totalClicks / 1000).toFixed(1)}K` : totalClicks;
-    const displayComm = `${(totalClicks * 1500).toLocaleString('vi-VN')}₫`;
+    const displayComm = FTECHDB.formatMoney(totalComm);
     const avgCtr = ctrCount > 0 ? `${(sumCtr / ctrCount).toFixed(1)}%` : '5.0%';
 
     document.querySelector('.sv-total-links').textContent = totalCount;
@@ -429,8 +439,9 @@ document.addEventListener('DOMContentLoaded', function () {
       const titleSpan = isError ? `${a.name} <span class="u-style-049">LINK LỖI</span>` : a.name;
       const urlClass = isError ? 'link-url u-style-046' : 'link-url';
       
-      const clicksDisplay = a.clicks.toLocaleString();
-      const conversions = isError || isInactive ? '-' : `${(a.clicks * 0.05).toFixed(1)}%`;
+      const affClicks = clickLogs.filter(log => log.linkId === a.id && log.status === 'valid').length;
+      const clicksDisplay = affClicks.toLocaleString();
+      const conversions = isError || isInactive ? '-' : `${(affClicks * 0.05).toFixed(1)}%`;
 
       // Actions buttons
       let actionButtons = '';
