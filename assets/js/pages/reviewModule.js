@@ -25,7 +25,7 @@ document.getElementById('rvText').addEventListener('input', function () {
 let photoCount = 0;
 const photoEmojis = ['🖼️', '📸', '🔍', '💡', '🎯'];
 function addPhoto() {
-  if (photoCount >= 5) { alert('Tối đa 5 ảnh.'); return; }
+  if (photoCount >= 5) { showToast('Tối đa 5 ảnh.', 'warn'); return; }
   const c = document.getElementById('uploadedImgs');
   const d = document.createElement('div'); d.className = 'uimg';
   d.innerHTML = photoEmojis[photoCount] + '<div class="del" onclick="this.parentElement.remove();photoCount--">×</div>';
@@ -196,23 +196,26 @@ function applyReviewFormState() {
 
 function submitReview() {
   const auth = getReviewAuthState();
+  function _blockSubmit(msg) {
+    applyReviewFormState();
+    showToast(msg, 'warn');
+  }
+
   if (!auth.ok) {
     if (auth.reason === 'login') {
       applyReviewFormState();
       window.location.href = 'login.html';
       return;
     }
-    if (auth.reason === 'duplicate') {
-      alert('Bạn đã đánh giá sản phẩm này. Mỗi tài khoản chỉ được gửi một đánh giá.');
-      return;
-    }
-    alert('Chỉ tài khoản khách hàng mới có thể gửi đánh giá.');
+    _blockSubmit(auth.reason === 'duplicate'
+      ? 'Bạn đã đánh giá sản phẩm này. Mỗi tài khoản chỉ được gửi một đánh giá.'
+      : 'Chỉ tài khoản khách hàng mới có thể gửi đánh giá.');
     return;
   }
 
-  if (mainStar === 0) { alert('Vui lòng chọn số sao đánh giá.'); return; }
+  if (mainStar === 0) { showToast('Vui lòng chọn số sao đánh giá.', 'warn'); return; }
   const textVal = document.getElementById('rvText').value.trim();
-  if (!textVal) { alert('Vui lòng nhập nội dung đánh giá.'); return; }
+  if (!textVal) { showToast('Vui lòng nhập nội dung đánh giá.', 'warn'); return; }
 
   const account = window.FTECHDB.getAccount(auth.username);
   const currentUser = account ? account.name : localStorage.getItem('ftech_username') || auth.username;
@@ -237,7 +240,7 @@ function submitReview() {
   setTimeout(() => {
     const saved = window.FTECHDB.saveReview(newReview);
     if (!saved) {
-      alert('Bạn đã đánh giá sản phẩm này. Mỗi tài khoản chỉ được gửi một đánh giá.');
+      showToast('Bạn đã đánh giá sản phẩm này. Mỗi tài khoản chỉ được gửi một đánh giá.', 'warn');
       btn.disabled = false;
       btn.textContent = '📤 Gửi đánh giá';
       applyReviewFormState();
@@ -311,7 +314,14 @@ function sortReviews(v) {
 }
 
 function loadMoreReviews() {
-  alert('Đã hiển thị toàn bộ đánh giá có trong cơ sở dữ liệu ảo!');
+  const listEl = document.getElementById('reviewsList');
+  if (listEl) {
+    const notice = document.createElement('div');
+    notice.style.cssText = 'text-align:center;color:var(--muted,#888);padding:12px;font-size:13px;';
+    notice.textContent = 'Đã hiển thị toàn bộ đánh giá có trong cơ sở dữ liệu.';
+    listEl.appendChild(notice);
+    setTimeout(() => notice.remove(), 2500);
+  }
 }
 
 // Initial nạp

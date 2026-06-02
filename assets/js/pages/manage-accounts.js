@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const avatar = document.getElementById('userModalAvatar').value.trim();
 
     if (!username || !password || !name) {
-      alert('Vui lòng nhập đầy đủ Username, Mật khẩu và Họ tên.');
+      showToast('Vui lòng nhập đầy đủ Username, Mật khẩu và Họ tên.', 'warn');
       return;
     }
 
@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function () {
       // Check if username already exists
       const existing = FTECHDB.getAccount(username);
       if (existing) {
-        alert('Tên đăng nhập đã tồn tại trong hệ thống!');
+        showToast('Tên đăng nhập đã tồn tại trong hệ thống!', 'error');
         return;
       }
     }
@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     FTECHDB.saveAccount(accData);
-    alert(editMode === 'add' ? 'Đã thêm tài khoản admin thành công.' : 'Đã cập nhật thông tin tài khoản admin.');
+    showToast(editMode === 'add' ? 'Đã thêm tài khoản admin thành công.' : 'Đã cập nhật thông tin tài khoản admin.', 'success');
     window.closeAccountModal('userModal');
     renderAll();
   };
@@ -119,21 +119,25 @@ document.addEventListener('DOMContentLoaded', function () {
     acc.lockReason = reason;
 
     FTECHDB.saveAccount(acc);
-    alert(acc.status === 'locked' ? `Đã khóa tài khoản ${acc.name}.` : `Đã mở khóa tài khoản ${acc.name}.`);
+    showToast(acc.status === 'locked' ? `Đã khóa tài khoản ${acc.name}.` : `Đã mở khóa tài khoản ${acc.name}.`, acc.status === 'locked' ? 'warn' : 'success');
     window.closeAccountModal('lockModal');
     renderAll();
   };
 
   window.doDeleteAccount = function (username) {
     if (username === 'admin') {
-      alert('Không thể xóa tài khoản Super Admin tối cao!');
+      showToast('Không thể xóa tài khoản Super Admin tối cao!', 'error');
       return;
     }
-    if (confirm(`Bạn có chắc chắn muốn xóa tài khoản "${username}" không? Hành động này không thể phục hồi.`)) {
-      FTECHDB.deleteAccount(username);
-      alert('Đã xóa tài khoản thành công.');
-      renderAll();
-    }
+    showConfirm(
+      `Bạn có chắc chắn muốn xóa tài khoản "${username}" không? Hành động này không thể phục hồi.`,
+      function () {
+        FTECHDB.deleteAccount(username);
+        showToast('Đã xóa tài khoản thành công.', 'info');
+        renderAll();
+      },
+      { title: 'Xóa tài khoản', icon: '🗑️', okText: 'Xóa' }
+    );
   };
 
   window.closeAccountModal = function (id) {

@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnPrimary) {
     btnPrimary.addEventListener('click', () => {
       updateDashboardData();
-      alert('Dữ liệu hệ thống đã được cập nhật mới nhất từ CSDL ảo.');
+      showToast('Dữ liệu hệ thống đã được cập nhật mới nhất.', 'success');
     });
   }
 });

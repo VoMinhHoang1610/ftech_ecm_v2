@@ -5,7 +5,7 @@ let currentPostId = 'post-1';
 function partnerClick(linkId) {
   const aff = window.FTECHDB.getAffiliate(linkId);
   if (!aff) {
-    alert('Khong tim thay lien ket affiliate cho doi tac nay.');
+    showToast('Không tìm thấy liên kết affiliate cho đối tác này.', 'error');
     return;
   }
 
@@ -19,7 +19,7 @@ function renderComments() {
   if (!list) return;
 
   if (comments.length === 0) {
-    list.innerHTML = '<div class="comment-empty">Chua co binh luan nao da duyet cho bai viet nay.</div>';
+    list.innerHTML = '<div class="comment-empty">Chưa có bình luận nào đã duyệt cho bài viết này.</div>';
     return;
   }
 
@@ -55,7 +55,7 @@ function submitComment() {
   const currentUserId = localStorage.getItem('ftech_user') || '';
 
   if (!value) {
-    alert('Vui long nhap noi dung binh luan.');
+    showToast('Vui lòng nhập nội dung bình luận.', 'warn');
     return;
   }
 
