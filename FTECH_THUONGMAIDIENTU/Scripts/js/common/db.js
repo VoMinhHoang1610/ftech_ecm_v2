@@ -7,7 +7,8 @@
     partners: 'ftech_partners',
     affiliates: 'ftech_affiliates',
     clickLogs: 'ftech_click_logs',
-    commissionLogs: 'ftech_commission_logs'
+    commissionLogs: 'ftech_commission_logs',
+    reviewWarnings: 'ftech_review_warnings'
   };
 
   const DEFAULT_ACCOUNTS = [
@@ -54,6 +55,28 @@
       avatar: '👨',
       status: 'active',
       createdAt: '01/03/2026'
+    },
+    {
+      username: 'customer2',
+      password: '123',
+      passwordHash: btoa('123'),
+      role: 'customer',
+      name: 'Khach hang canh bao',
+      email: 'customer2@ftech.vn',
+      avatar: 'KH',
+      status: 'active',
+      createdAt: '02/03/2026'
+    },
+    {
+      username: 'admin2',
+      password: '123',
+      passwordHash: btoa('123'),
+      role: 'customer',
+      name: 'Tai khoan dang khoa',
+      email: 'admin2@ftech.vn',
+      avatar: 'LK',
+      status: 'active',
+      createdAt: '02/03/2026'
     }
   ];
 
@@ -262,6 +285,11 @@
     { id: 'aff-4', postId: 'post-2', partnerId: 'partner-shopee', partner: 'Shopee Affiliate', type: 'Link mua chính', url: 'https://shopee.vn/product/airpods-pro-2', clicks: 654, status: 'active', name: 'AirPods Pro 2 - Shopee', attachedPost: 'So sánh AirPods Pro 2 vs Sony WH-1000XM5: Chọn cái nào?', date: '16/03/2026', commission: '4%', cvr: '5.8%' }
   ];
 
+  const DEFAULT_REVIEW_WARNINGS = [
+    { userId: 'customer2', warningCount: 2, isLocked: false, lockedUntil: '' },
+    { userId: 'admin2', warningCount: 3, isLocked: true, lockedUntil: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() }
+  ];
+
   function read(key, fallback = []) {
     try {
       return JSON.parse(localStorage.getItem(key)) || fallback;
@@ -384,6 +412,15 @@
     };
   }
 
+  function normalizeReviewWarning(record) {
+    return {
+      userId: record.userId || record.username || '',
+      warningCount: Number(record.warningCount || 0),
+      isLocked: Boolean(record.isLocked),
+      lockedUntil: record.lockedUntil || ''
+    };
+  }
+
   function initCollection(key, seed, normalizer) {
     const current = read(key, null);
     const base = current && current.length ? current : seed;
@@ -392,24 +429,54 @@
 
   function seedClickLogsFromAffiliates() {
     const logs = read(STORAGE_KEYS.clickLogs, []);
-    if (logs.length) return;
     const affiliates = read(STORAGE_KEYS.affiliates, []);
-    const seeded = [];
-    affiliates.forEach(affiliate => {
-      const safeCount = Math.min(Number(affiliate.clicks) || 0, 8);
-      for (let index = 0; index < safeCount; index++) {
-        seeded.push({
-          id: `click-seed-${affiliate.id}-${index + 1}`,
-          linkId: affiliate.id,
-          partnerId: affiliate.partnerId,
-          postId: affiliate.postId,
-          timestamp: new Date(Date.now() - (index + 1) * 3600000).toISOString(),
-          ipAddress: `10.0.0.${index + 10}`,
-          status: 'valid'
-        });
-      }
+    const seeded = logs.slice();
+    if (!logs.length) {
+      affiliates.forEach(affiliate => {
+        const safeCount = Math.min(Number(affiliate.clicks) || 0, 8);
+        for (let index = 0; index < safeCount; index++) {
+          seeded.push({
+            id: `click-seed-${affiliate.id}-${index + 1}`,
+            linkId: affiliate.id,
+            partnerId: affiliate.partnerId,
+            postId: affiliate.postId,
+            timestamp: new Date(Date.now() - (index + 1) * 3600000).toISOString(),
+            ipAddress: `10.0.0.${index + 10}`,
+            status: 'valid'
+          });
+        }
+      });
+    }
+
+    const testLogs = [
+      { id: 'click-test-customer-post-1-1', linkId: 'aff-1', postId: 'post-1', username: 'customer', ipAddress: '10.1.0.11' },
+      { id: 'click-test-customer-post-1-2', linkId: 'aff-2', postId: 'post-1', username: 'customer', ipAddress: '10.1.0.12' },
+      { id: 'click-test-customer-post-2-1', linkId: 'aff-4', postId: 'post-2', username: 'customer', ipAddress: '10.1.0.21' },
+      { id: 'click-test-customer-post-2-2', linkId: 'aff-4', postId: 'post-2', username: 'customer', ipAddress: '10.1.0.22' },
+      { id: 'click-test-customer-post-3-1', linkId: 'aff-1', postId: 'post-3', username: 'customer', ipAddress: '10.1.0.31' },
+      { id: 'click-test-customer2-post-1-1', linkId: 'aff-1', postId: 'post-1', username: 'customer2', ipAddress: '10.1.0.41' }
+    ];
+    testLogs.forEach((log, index) => {
+      if (seeded.some(item => item.id === log.id)) return;
+      const affiliate = affiliates.find(item => item.id === log.linkId) || affiliates.find(item => item.postId === log.postId) || {};
+      seeded.push({
+        ...log,
+        partnerId: affiliate.partnerId || 'partner-shopee',
+        timestamp: new Date(Date.now() - (index + 2) * 1800000).toISOString(),
+        status: 'valid'
+      });
     });
     write(STORAGE_KEYS.clickLogs, seeded);
+  }
+
+  function seedReviewWarnings() {
+    const warnings = read(STORAGE_KEYS.reviewWarnings, []).map(normalizeReviewWarning);
+    DEFAULT_REVIEW_WARNINGS.forEach(seed => {
+      if (!warnings.some(record => record.userId === seed.userId)) {
+        warnings.push(normalizeReviewWarning(seed));
+      }
+    });
+    write(STORAGE_KEYS.reviewWarnings, warnings);
   }
 
   function initDB() {
@@ -429,6 +496,7 @@
     initCollection(STORAGE_KEYS.affiliates, DEFAULT_AFFILIATES, normalizeAffiliate);
     if (!localStorage.getItem(STORAGE_KEYS.commissionLogs)) write(STORAGE_KEYS.commissionLogs, []);
     seedClickLogsFromAffiliates();
+    seedReviewWarnings();
   }
 
   initDB();
@@ -532,7 +600,8 @@
         date: review.date || new Date().toLocaleDateString('vi-VN'),
         helpful: review.helpful || 0,
         stars: Number(review.stars || 0),
-        verified: review.verified !== undefined ? review.verified : this.hasValidClickForUser(postId, currentUser)
+        verified: review.verified !== undefined ? review.verified : this.hasValidClickLog(currentUser, postId),
+        hasValidPurchase: review.hasValidPurchase !== undefined ? review.hasValidPurchase : this.hasValidClickLog(currentUser, postId)
       };
       reviews.unshift(normalized);
       write(STORAGE_KEYS.reviews, reviews);
@@ -720,11 +789,54 @@
         (!filter.postId || log.postId === filter.postId) &&
         (!filter.partnerId || log.partnerId === filter.partnerId) &&
         (!filter.linkId || log.linkId === filter.linkId) &&
+        (!filter.username || log.username === filter.username) &&
         (!filter.status || log.status === filter.status)
       );
     },
+    hasValidClickLog(userId, postId) {
+      if (!userId || !postId) return false;
+      return this.getClickLogs({ postId, username: userId, status: 'valid' }).length > 0;
+    },
     hasValidClickForUser(postId, username) {
-      return this.getClickLogs({ postId }).some(log => log.status === 'valid' && (!username || log.username === username || log.username === 'guest'));
+      return this.hasValidClickLog(username, postId);
+    },
+    getReviewWarnings(userId) {
+      if (!userId) return { userId: '', warningCount: 0, isLocked: false, lockedUntil: '' };
+      const warnings = read(STORAGE_KEYS.reviewWarnings, []).map(normalizeReviewWarning);
+      const record = warnings.find(item => item.userId === userId) || { userId, warningCount: 0, isLocked: false, lockedUntil: '' };
+      if (record.isLocked && record.lockedUntil && new Date(record.lockedUntil).getTime() <= Date.now()) {
+        return this.clearWarnings(userId);
+      }
+      return record;
+    },
+    isReviewLocked(userId) {
+      const record = this.getReviewWarnings(userId);
+      return Boolean(record.isLocked && record.lockedUntil && new Date(record.lockedUntil).getTime() > Date.now());
+    },
+    addWarning(userId) {
+      if (!userId) return null;
+      const warnings = read(STORAGE_KEYS.reviewWarnings, []).map(normalizeReviewWarning);
+      const index = warnings.findIndex(item => item.userId === userId);
+      const record = index >= 0 ? warnings[index] : { userId, warningCount: 0, isLocked: false, lockedUntil: '' };
+      record.warningCount = Number(record.warningCount || 0) + 1;
+      if (record.warningCount >= 3) {
+        record.warningCount = 3;
+        record.isLocked = true;
+        record.lockedUntil = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString();
+      }
+      if (index >= 0) warnings[index] = record;
+      else warnings.push(record);
+      write(STORAGE_KEYS.reviewWarnings, warnings);
+      return record;
+    },
+    clearWarnings(userId) {
+      const warnings = read(STORAGE_KEYS.reviewWarnings, []).map(normalizeReviewWarning);
+      const index = warnings.findIndex(item => item.userId === userId);
+      const record = { userId, warningCount: 0, isLocked: false, lockedUntil: '' };
+      if (index >= 0) warnings[index] = record;
+      else warnings.push(record);
+      write(STORAGE_KEYS.reviewWarnings, warnings);
+      return record;
     },
     getCommissionLogs() {
       return read(STORAGE_KEYS.commissionLogs);

@@ -6,6 +6,7 @@
     'refreshToken',
     'token',
     'role',
+    'ftech_logged_in',
     'ftech_role',
     'ftech_user',
     'ftech_username',

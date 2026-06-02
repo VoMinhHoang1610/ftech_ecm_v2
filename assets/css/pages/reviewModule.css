@@ -87,6 +87,22 @@
     .submit-btn:disabled{opacity:.55;cursor:not-allowed}
     .review-auth-notice{margin:0 0 12px;padding:10px 12px;border-radius:10px;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.25);color:#b45309;font-size:13px;line-height:1.5}
     .review-auth-notice a{color:#4a7dff;font-weight:600}
+    .review-modal-overlay{position:fixed;inset:0;z-index:1200;display:none;align-items:center;justify-content:center;background:rgba(42,47,95,.36);backdrop-filter:blur(4px);padding:20px}
+    .review-modal-overlay.open{display:flex}
+    .review-modal{width:460px;max-width:100%;background:#fff;border:1px solid var(--border2);border-radius:14px;box-shadow:0 24px 60px rgba(42,47,95,.24);padding:22px;position:relative}
+    .review-modal.warn{border-top:4px solid #f59e0b}
+    .review-modal.danger{border-top:4px solid var(--red)}
+    .review-modal-close{position:absolute;right:14px;top:12px;width:28px;height:28px;border:1px solid var(--border);border-radius:7px;background:#fff;color:var(--muted);cursor:pointer;font-weight:700}
+    .review-modal-title{font-family:var(--heading-font);font-size:17px;font-weight:700;color:var(--text);padding-right:34px;margin-bottom:10px}
+    .review-modal-body{font-size:13px;color:var(--body);line-height:1.65}
+    .review-modal-body p{margin:0 0 10px}
+    .review-modal-list{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+    .review-modal-list span{font-size:12px;font-weight:700;color:#b45309;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.25);border-radius:999px;padding:4px 8px}
+    .review-modal-suggestions{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin:10px 0}
+    .review-modal-actions{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;margin-top:16px}
+    .review-modal-btn{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:8px 14px;border-radius:9px;font-size:13px;font-weight:700;text-decoration:none;border:1px solid var(--border2);cursor:pointer;font-family:'Poppins',Arial,Helvetica,sans-serif}
+    .review-modal-btn.primary{background:linear-gradient(135deg,var(--accent),#0090ff);border-color:transparent;color:#0c1017}
+    .review-modal-btn.ghost{background:#fff;color:var(--body)}
 
     .toast-success{display:none;align-items:center;gap:10px;background:rgba(0,232,122,.1);border:1px solid rgba(0,232,122,.3);border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:14px;color:var(--green);animation:fadeIn .3s ease}
     .toast-success.show{display:flex}

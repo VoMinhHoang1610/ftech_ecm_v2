@@ -157,6 +157,7 @@ document.getElementById('loginForm').addEventListener('submit', function (e) {
     localStorage.setItem('ftech_username', user.name);
     localStorage.setItem('ftech_avatar', user.avatar || '👤');
     localStorage.setItem('ftech_user', user.username);
+    localStorage.setItem('ftech_access_token', `mock-token-${user.username}-${Date.now()}`);
 
     showRoleModal(user.role, user.name);
   }, 600);

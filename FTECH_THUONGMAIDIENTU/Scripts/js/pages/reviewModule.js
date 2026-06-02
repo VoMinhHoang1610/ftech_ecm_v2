@@ -150,17 +150,99 @@ function getReviewAuthState() {
   const username = localStorage.getItem('ftech_user');
   const role = localStorage.getItem('ftech_role');
   const token = localStorage.getItem('ftech_access_token');
+  const loggedIn = localStorage.getItem('ftech_logged_in') === 'true';
 
-  if (!username || !token) {
+  if (!username || (!token && !loggedIn)) {
     return { ok: false, reason: 'login' };
   }
   if (role !== 'customer') {
     return { ok: false, reason: 'role' };
   }
-  if (window.FTECHDB.hasUserReviewedPost(currentPostId, username)) {
-    return { ok: false, reason: 'duplicate' };
-  }
   return { ok: true, username };
+}
+
+function escapeHtml(value) {
+  return String(value || '').replace(/[&<>"']/g, char => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  }[char]));
+}
+
+function formatLockDate(isoString) {
+  if (!isoString) return '';
+  return new Date(isoString).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' });
+}
+
+function getSeverityLabel(severity) {
+  const labels = {
+    low: 'nhẹ',
+    medium: 'trung bình',
+    high: 'nghiêm trọng'
+  };
+  return labels[severity] || severity || 'chưa xác định';
+}
+
+function closeReviewModal() {
+  const modal = document.getElementById('reviewGateModal');
+  if (modal) modal.classList.remove('open');
+}
+
+function focusReviewText() {
+  closeReviewModal();
+  const textarea = document.getElementById('rvText');
+  if (textarea) textarea.focus();
+}
+
+function showReviewModal(type, data = {}) {
+  let modal = document.getElementById('reviewGateModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'reviewGateModal';
+    modal.className = 'review-modal-overlay';
+    modal.addEventListener('click', event => {
+      if (event.target === modal) closeReviewModal();
+    });
+    document.body.appendChild(modal);
+  }
+
+  const configs = {
+    lock: {
+      title: 'Tài khoản bị khóa đánh giá',
+      tone: 'danger',
+      body: `<p>Bạn đã nhận 3 cảnh báo về ngôn ngữ không phù hợp. Chức năng gửi đánh giá bị khóa trong 3 ngày.</p><p>Thời gian mở khóa: <strong>${escapeHtml(formatLockDate(data.lockedUntil))}</strong></p>`,
+      actions: '<button class="review-modal-btn primary" onclick="closeReviewModal()">Đã hiểu</button>'
+    },
+    noClick: {
+      title: 'Bạn chưa mua hàng',
+      tone: 'warn',
+      body: '<p>Bạn cần mua hàng thông qua liên kết affiliate hợp lệ trong bài review sản phẩm trước khi gửi đánh giá.</p>',
+      actions: `<button class="review-modal-btn ghost" onclick="closeReviewModal()">Đóng</button><a class="review-modal-btn primary" href="product.html?id=${encodeURIComponent(currentPostId)}">Quay lại bài review</a>`
+    },
+    profanity: {
+      title: 'Nội dung chứa từ không phù hợp',
+      tone: data.isLocked ? 'danger' : 'warn',
+      body: `
+        <p>Vui lòng chỉnh sửa đánh giá trước khi gửi lại. Số lần cảnh báo hiện tại: <strong>${data.warningCount}/3</strong>.</p>
+        <div class="review-modal-list">${(data.matches || []).map(match => `<span>${escapeHtml(match.word)} · Mức độ ${escapeHtml(getSeverityLabel(match.severity))}</span>`).join('')}</div>
+        <div class="review-modal-suggestions">${(data.suggestions || []).map(item => `<p>${escapeHtml(item)}</p>`).join('')}</div>
+        ${data.isLocked ? `<p><strong>Tài khoản đã bị khóa đến ${escapeHtml(formatLockDate(data.lockedUntil))}.</strong></p>` : ''}
+      `,
+      actions: '<button class="review-modal-btn primary" onclick="focusReviewText()">Chỉnh sửa</button>'
+    }
+  };
+  const cfg = configs[type];
+  modal.innerHTML = `
+    <div class="review-modal ${cfg.tone}">
+      <button class="review-modal-close" onclick="closeReviewModal()" aria-label="Đóng">x</button>
+      <div class="review-modal-title">${cfg.title}</div>
+      <div class="review-modal-body">${cfg.body}</div>
+      <div class="review-modal-actions">${cfg.actions}</div>
+    </div>
+  `;
+  modal.classList.add('open');
 }
 
 function applyReviewFormState() {
@@ -189,8 +271,6 @@ function applyReviewFormState() {
     notice.innerHTML = 'Vui lòng <a href="login.html">đăng nhập</a> tài khoản khách hàng để gửi đánh giá.';
   } else if (state.reason === 'role') {
     notice.textContent = 'Chỉ tài khoản khách hàng mới có thể gửi đánh giá sản phẩm.';
-  } else if (state.reason === 'duplicate') {
-    notice.textContent = 'Bạn đã đánh giá sản phẩm này. Mỗi tài khoản chỉ được gửi một đánh giá.';
   }
 }
 
@@ -213,8 +293,39 @@ function submitReview() {
     return;
   }
 
-  if (mainStar === 0) { showToast('Vui lòng chọn số sao đánh giá.', 'warn'); return; }
+  const warningState = window.FTECHDB.getReviewWarnings(auth.username);
+  if (window.FTECHDB.isReviewLocked(auth.username)) {
+    showReviewModal('lock', warningState);
+    return;
+  }
+
+  const hasValidPurchase = window.FTECHDB.hasValidClickLog(auth.username, currentPostId);
+  if (!hasValidPurchase) {
+    showReviewModal('noClick');
+    return;
+  }
+
   const textVal = document.getElementById('rvText').value.trim();
+  const profanityResult = window.FTECHProfanityFilter ? window.FTECHProfanityFilter.checkProfanity(textVal) : { hasProfanity: false };
+  if (profanityResult.hasProfanity) {
+    const updatedWarning = window.FTECHDB.addWarning(auth.username);
+    showReviewModal('profanity', {
+      matches: profanityResult.matches,
+      suggestions: profanityResult.suggestions,
+      warningCount: updatedWarning.warningCount,
+      isLocked: updatedWarning.isLocked,
+      lockedUntil: updatedWarning.lockedUntil
+    });
+    return;
+  }
+
+  if (window.FTECHDB.hasUserReviewedPost(currentPostId, auth.username)) {
+    showToast('Bạn đã đánh giá sản phẩm này. Mỗi tài khoản chỉ được gửi một đánh giá.', 'warn');
+    applyReviewFormState();
+    return;
+  }
+
+  if (mainStar === 0) { showToast('Vui lòng chọn số sao đánh giá.', 'warn'); return; }
   if (!textVal) { showToast('Vui lòng nhập nội dung đánh giá.', 'warn'); return; }
 
   const account = window.FTECHDB.getAccount(auth.username);
@@ -230,7 +341,8 @@ function submitReview() {
     title: document.getElementById('rvTitle').value.trim() || 'Nhận xét',
     text: textVal,
     hasPhotos: photoCount > 0,
-    verified: window.FTECHDB.hasValidClickForUser(currentPostId, localStorage.getItem('ftech_user') || 'customer'),
+    verified: hasValidPurchase,
+    hasValidPurchase,
     criteria: { ...miniCriteria }
   };
 
