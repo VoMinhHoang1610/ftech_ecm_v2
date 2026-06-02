@@ -363,7 +363,11 @@ document.addEventListener('DOMContentLoaded', function () {
       document.getElementById('tableTitle').textContent = `Tất cả đối tác (${filtered.length})`;
 
       if (filtered.length === 0) {
-        tbody.innerHTML = `<div style="padding: 20px; text-align: center; color: var(--muted);">📭 Không tìm thấy đối tác.</div>`;
+        tbody.innerHTML = `
+          <div class="t-row t-empty">
+            <div class="empty-cell">📭 Không tìm thấy đối tác.</div>
+          </div>
+        `;
       } else {
         tbody.innerHTML = filtered.map(p => {
           const statusClass = `pcs-${p.status}`;

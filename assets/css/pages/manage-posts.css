@@ -56,6 +56,9 @@
     .t-row{display:grid;grid-template-columns:32px 2.8fr 1fr 1fr 1fr 70px 70px 80px 120px;align-items:center;padding:13px 18px;border-bottom:1px solid rgba(76,84,170,0.08);transition:background .2s;cursor:pointer;}
     .t-row:last-child{border-bottom:none;}
     .t-row:hover{background:rgba(74,125,255,.03);}
+    .t-row.t-empty{cursor:default;}
+    .t-row.t-empty:hover{background:transparent;}
+    .empty-cell{grid-column:1/-1;padding:30px 18px;text-align:center;color:var(--muted);font-size:14px;}
     .th{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#8a93b8;}
     .post-cell{display:flex;align-items:center;gap:12px;}
     .post-thumb{width:44px;height:36px;border-radius:7px;background:linear-gradient(135deg,#f0eeff,#e8e2ff);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;overflow:hidden;border:1px solid rgba(76,84,170,0.12);}

@@ -332,8 +332,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (filtered.length === 0) {
       tbody.innerHTML = `
-        <div style="padding: 30px; text-align: center; color: var(--muted); font-size: 14px;">
-          📭 Không tìm thấy bài viết nào khớp với bộ lọc.
+        <div class="t-row t-empty">
+          <div class="empty-cell">📭 Không tìm thấy bài viết nào khớp với bộ lọc.</div>
         </div>
       `;
       document.querySelector('.pag-info').textContent = `Hiển thị 0 bài viết`;
