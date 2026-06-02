@@ -729,16 +729,26 @@
       write(STORAGE_KEYS.commissionLogs, logs);
     },
     calculateCommissionSummary() {
-      const validLogs = this.getClickLogs({ status: 'valid' });
+      const affiliates = this.getAffiliates();
       const posts = this.getPosts();
       const partners = this.getPartners();
-      const revenue = validLogs.reduce((sum, log) => {
-        const post = posts.find(p => p.id === log.postId);
-        const partner = partners.find(p => p.id === log.partnerId);
-        return sum + ((post ? Number(post.price) || 0 : 0) * (partner ? Number(partner.commissionRate) || 0 : 0));
-      }, 0);
+      
+      let validClicks = 0;
+      let revenue = 0;
+      
+      affiliates.forEach(a => {
+        if (a.status === 'active') {
+          validClicks += Number(a.clicks) || 0;
+          const post = posts.find(p => p.id === a.postId);
+          const partner = partners.find(p => p.id === a.partnerId);
+          if (post && partner) {
+            revenue += (Number(a.clicks) || 0) * (Number(post.price) || 0) * (Number(partner.commissionRate) || 0);
+          }
+        }
+      });
+
       return {
-        validClicks: validLogs.length,
+        validClicks,
         suspiciousClicks: this.getClickLogs({ status: 'suspicious' }).length,
         revenue
       };
