@@ -102,12 +102,12 @@
     alert('⚠️ Khu vực hạn chế: Chỉ Super Admin mới có quyền truy cập trang này.');
     clearAuthStorage();
     window.location.href = getTargetUrl('login.html');
-  } else if (isContentArea && role !== 'content' && role !== 'admin') {
-    alert('⚠️ Khu vực hạn chế: Chỉ Content Manager hoặc Super Admin mới có quyền truy cập.');
+  } else if (isContentArea && role !== 'content') {
+    alert('⚠️ Khu vực hạn chế: Chỉ Content Manager mới có quyền truy cập.');
     clearAuthStorage();
     window.location.href = getTargetUrl('login.html');
-  } else if (isPartnerArea && role !== 'partner' && role !== 'admin') {
-    alert('⚠️ Khu vực hạn chế: Chỉ Affiliate Manager hoặc Super Admin mới có quyền truy cập.');
+  } else if (isPartnerArea && role !== 'partner') {
+    alert('⚠️ Khu vực hạn chế: Chỉ Affiliate Manager mới có quyền truy cập.');
     clearAuthStorage();
     window.location.href = getTargetUrl('login.html');
   }

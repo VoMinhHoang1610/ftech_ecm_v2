@@ -26,6 +26,13 @@ document.addEventListener('DOMContentLoaded', function () {
     if (e.target === this) this.classList.remove('open');
   }));
 
+  document.querySelectorAll('.sidebar .sb-item').forEach(item => {
+    item.addEventListener('click', function () {
+      document.querySelectorAll('.sidebar .sb-item').forEach(link => link.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+
   // Filter chips
   window.setF = function (el) {
     document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));

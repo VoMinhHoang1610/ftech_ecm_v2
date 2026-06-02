@@ -163,7 +163,7 @@
 <div class="modal-overlay" id="userModal">
     <div class="modal">
         <div class="modal-title">Cập nhật tài khoản admin</div>
-        <div class="modal-sub">Biểu mẫu này dùng cho kịch bản xem chi tiết admin, chỉnh vai trò và ghi chú thay đổi phân quyền.</div>
+        <div class="modal-sub">Cập nhật thông tin, vai trò và ghi chú phân quyền cho tài khoản hệ thống.</div>
         <div class="form-grid">
             <div>
                 <label class="u-style-043">Họ tên</label>
@@ -184,7 +184,7 @@
         </div>
         <div class="u-style-044">
             <label class="u-style-043">Ghi chú thay đổi</label>
-            <textarea class="textarea-field" placeholder="Ví dụ: chuyển quyền sang Affiliate Manager, bổ sung quyền kiểm tra hiệu suất, cập nhật tài khoản phụ trách mới..."></textarea>
+            <textarea class="textarea-field" placeholder="Nội dung thay đổi quyền truy cập"></textarea>
         </div>
         <div class="modal-actions">
             <button class="btn-ghost" type="button" onclick="closeAccountModal('userModal')">Đóng</button>
@@ -196,11 +196,11 @@
 <div class="modal-overlay" id="lockModal">
     <div class="modal">
         <div class="modal-title">Phân quyền vai trò</div>
-        <div class="modal-sub">Biểu mẫu này dùng cho kịch bản cập nhật vai trò và quyền truy cập cho tài khoản admin.</div>
+        <div class="modal-sub">Cập nhật vai trò và quyền truy cập cho tài khoản hệ thống.</div>
         <div class="u-style-045">Tài khoản: <span id="lockModalName">Nguyễn Tuấn Anh</span></div>
         <div>
             <label class="u-style-043">Ghi chú phân quyền</label>
-            <textarea class="textarea-field" id="lockReasonField" placeholder="Ví dụ: đổi sang User Account Manager, thêm quyền xem danh sách vi phạm, cập nhật phạm vi quản lý..."></textarea>
+            <textarea class="textarea-field" id="lockReasonField" placeholder="Nhập lý do thay đổi quyền truy cập"></textarea>
         </div>
         <div class="modal-actions">
             <button class="btn-ghost" type="button" onclick="closeAccountModal('lockModal')">Hủy</button>
