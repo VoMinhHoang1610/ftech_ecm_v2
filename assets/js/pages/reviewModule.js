@@ -146,16 +146,81 @@ function renderReviews() {
   renderReviewList(window.FTECHDB.getReviews(currentPostId));
 }
 
+function getReviewAuthState() {
+  const username = localStorage.getItem('ftech_user');
+  const role = localStorage.getItem('ftech_role');
+  const token = localStorage.getItem('ftech_access_token');
+
+  if (!username || !token) {
+    return { ok: false, reason: 'login' };
+  }
+  if (role !== 'customer') {
+    return { ok: false, reason: 'role' };
+  }
+  if (window.FTECHDB.hasUserReviewedPost(currentPostId, username)) {
+    return { ok: false, reason: 'duplicate' };
+  }
+  return { ok: true, username };
+}
+
+function applyReviewFormState() {
+  const submitBtn = document.querySelector('.submit-btn');
+  if (!submitBtn) return;
+
+  let notice = document.getElementById('reviewAuthNotice');
+  if (!notice) {
+    notice = document.createElement('div');
+    notice.id = 'reviewAuthNotice';
+    notice.className = 'review-auth-notice';
+    submitBtn.parentElement.insertBefore(notice, submitBtn);
+  }
+
+  const state = getReviewAuthState();
+  if (state.ok) {
+    notice.textContent = '';
+    notice.style.display = 'none';
+    submitBtn.disabled = false;
+    return;
+  }
+
+  notice.style.display = 'block';
+  submitBtn.disabled = true;
+  if (state.reason === 'login') {
+    notice.innerHTML = 'Vui lòng <a href="login.html">đăng nhập</a> tài khoản khách hàng để gửi đánh giá.';
+  } else if (state.reason === 'role') {
+    notice.textContent = 'Chỉ tài khoản khách hàng mới có thể gửi đánh giá sản phẩm.';
+  } else if (state.reason === 'duplicate') {
+    notice.textContent = 'Bạn đã đánh giá sản phẩm này. Mỗi tài khoản chỉ được gửi một đánh giá.';
+  }
+}
+
 function submitReview() {
+  const auth = getReviewAuthState();
+  if (!auth.ok) {
+    if (auth.reason === 'login') {
+      alert('Vui lòng đăng nhập tài khoản khách hàng để gửi đánh giá.');
+      window.location.href = 'login.html';
+      return;
+    }
+    if (auth.reason === 'duplicate') {
+      alert('Bạn đã đánh giá sản phẩm này. Mỗi tài khoản chỉ được gửi một đánh giá.');
+      return;
+    }
+    alert('Chỉ tài khoản khách hàng mới có thể gửi đánh giá.');
+    return;
+  }
+
   if (mainStar === 0) { alert('Vui lòng chọn số sao đánh giá.'); return; }
   const textVal = document.getElementById('rvText').value.trim();
   if (!textVal) { alert('Vui lòng nhập nội dung đánh giá.'); return; }
 
-  const currentUser = localStorage.getItem('ftech_username') || 'Nguyễn Minh Vỹ';
-  const currentAvatar = localStorage.getItem('ftech_avatar') || '👨';
+  const account = window.FTECHDB.getAccount(auth.username);
+  const currentUser = account ? account.name : localStorage.getItem('ftech_username') || auth.username;
+  const currentAvatar = account ? account.avatar : localStorage.getItem('ftech_avatar') || '👨';
 
   const newReview = {
     postId: currentPostId,
+    userId: auth.username,
     name: currentUser,
     avatar: currentAvatar,
     stars: mainStar,
@@ -170,7 +235,14 @@ function submitReview() {
   btn.disabled = true; btn.textContent = '⏳ Đang gửi...';
 
   setTimeout(() => {
-    window.FTECHDB.saveReview(newReview);
+    const saved = window.FTECHDB.saveReview(newReview);
+    if (!saved) {
+      alert('Bạn đã đánh giá sản phẩm này. Mỗi tài khoản chỉ được gửi một đánh giá.');
+      btn.disabled = false;
+      btn.textContent = '📤 Gửi đánh giá';
+      applyReviewFormState();
+      return;
+    }
     document.getElementById('toastSuccess').classList.add('show');
     btn.textContent = '✅ Đã gửi!';
 
@@ -190,6 +262,7 @@ function submitReview() {
       btn.disabled = false;
       btn.textContent = '📤 Gửi đánh giá';
       document.getElementById('toastSuccess').classList.remove('show');
+      applyReviewFormState();
     }, 2500);
   }, 900);
 }
@@ -262,4 +335,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
   renderReviews();
   renderStats();
+  applyReviewFormState();
 });

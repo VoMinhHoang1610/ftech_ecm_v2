@@ -505,14 +505,30 @@
       const reviews = read(STORAGE_KEYS.reviews).map(review => ({ postId: 'post-1', helpful: 0, ...review }));
       return postId ? reviews.filter(r => r.postId === postId) : reviews;
     },
+    hasUserReviewedPost(postId, username = '') {
+      if (!postId || !username) return false;
+      const account = this.getAccount(username);
+      const displayName = account ? account.name : '';
+      return this.getReviews(postId).some(review =>
+        review.userId === username ||
+        (displayName && review.name === displayName)
+      );
+    },
     saveReview(review) {
       const reviews = this.getReviews();
-      const currentUser = localStorage.getItem('ftech_user') || 'customer';
+      const currentUser = localStorage.getItem('ftech_user') || review.userId || 'customer';
       const postId = review.postId || 'post-1';
+      if (this.hasUserReviewedPost(postId, currentUser)) {
+        return null;
+      }
+      const account = this.getAccount(currentUser);
       const normalized = {
         ...review,
         id: review.id || Date.now(),
         postId,
+        userId: review.userId || currentUser,
+        name: review.name || (account ? account.name : currentUser),
+        avatar: review.avatar || (account ? account.avatar : '👤'),
         date: review.date || new Date().toLocaleDateString('vi-VN'),
         helpful: review.helpful || 0,
         stars: Number(review.stars || 0),

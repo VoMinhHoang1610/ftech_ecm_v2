@@ -84,6 +84,9 @@
     .uimg .del{position:absolute;top:-5px;right:-5px;width:18px;height:18px;border-radius:50%;background:var(--red);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer}
 
     .submit-btn{width:100%;padding:13px;border-radius:11px;background:linear-gradient(135deg,var(--accent),#0090ff);color:#0c1017;font-size:15px;font-weight:700;border:none;cursor:pointer;font-family:'Poppins',Arial,Helvetica,sans-serif;transition:opacity .2s}.submit-btn:hover{opacity:.88}
+    .submit-btn:disabled{opacity:.55;cursor:not-allowed}
+    .review-auth-notice{margin:0 0 12px;padding:10px 12px;border-radius:10px;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.25);color:#b45309;font-size:13px;line-height:1.5}
+    .review-auth-notice a{color:#4a7dff;font-weight:600}
 
     .toast-success{display:none;align-items:center;gap:10px;background:rgba(0,232,122,.1);border:1px solid rgba(0,232,122,.3);border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:14px;color:var(--green);animation:fadeIn .3s ease}
     .toast-success.show{display:flex}
