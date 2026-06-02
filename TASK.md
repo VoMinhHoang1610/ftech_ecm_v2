@@ -16,7 +16,7 @@
 - [x] Product comment area da co notice "dang cho duyet", public chi hien comment approved.
 - [x] Profile tab comment da hien trang thai Cho duyet/Da duyet/Tu choi va ly do tu choi.
 - [x] Co trang rieng `manage-comments.html` + `manage-comments.js` cho duyet comment.
-- [ ] Polish UI man demo chinh (`product.html`, `reviewModule.html`, `dashboard.html` va CSS lien quan) de giam tran text/spacings.
+- [x] Polish UI man demo chinh (`product.html`, `reviewModule.html`, `dashboard.html` va CSS lien quan) de giam tran text/spacings. ✅ Da giam padding/margin/gap/font-size cho 3 trang + dong bo mirror (02/06/2026).
 - [x] Empty state/table polish cho `manage-posts.html`, `manage-affiliates.html`, `manage-partners.html`, `manage-accounts.html` (da co `t-empty` + `empty-cell` va empty message theo bo loc trong JS/CSS).
 
 
@@ -79,7 +79,7 @@
 
 **Chua lam P2:**
 - ❌ Multi-session support (localStorage dung chung, chua co per-tab session)
-- ❌ UI polish main pages (product.html, reviewModule.html, dashboard.html text/spacing) - optional vì core features ready
+- ✅ UI polish main pages (product.css, reviewModule.css, dashboard.css) - Da giam spacing/padding/font-size (02/06/2026)
 
 ### 12.2 Chi tiet trang thai tung file
 
@@ -124,10 +124,11 @@
    - 🔄 manage-affiliates.js: 90% synced, still reads affiliate.cvr hardcoded (not critical for demo)
 
 #### P2 Nice-to-have (2-3h if time)
-1. **Polish main demo pages**
-   - product.html: Reduce spacing, optimize comment area font size
-   - reviewModule.html: Compact review form, better photo upload UI
-   - dashboard.html: Tighten KPI card spacing, cleaner charts
+1. ~~**Polish main demo pages**~~
+   - ✅ Da hoan thanh (02/06/2026)
+   - product.css: Giam title font-size 34→28, card padding 22→18, hero gap 24→18, comment textarea 110→80
+   - reviewModule.css: Giam write-card padding 28→22, star-picker margin 18→10, review card 22→18, rs-box 24→18
+   - dashboard.css: Giam KPI val 28→24, card padding 20→16, content padding, welcome margin, chart gap
 
 2. **Multi-session support (Optional)**
    - IndexedDB per-tab session instead of shared localStorage
