@@ -129,16 +129,16 @@ Root frontend va ban mirror `FTECH_THUONGMAIDIENTU` dang dong bo voi cac file ch
 
 ## 6. Checklist nghiem thu
 
-- [ ] `git branch --show-current` dung branch lam viec, base tu `develop`.
-- [ ] `git pull origin develop` truoc khi bat dau.
-- [ ] `node --check assets/js/common/db.js` pass.
-- [ ] `node --check assets/js/pages/product.js` pass.
-- [ ] `node --check assets/js/pages/manage-posts.js` pass.
-- [ ] `node --check assets/js/pages/reviewModule.js` pass.
-- [ ] `node --check assets/js/pages/trangchu.js` pass.
-- [ ] `dotnet build backend/Fintech.sln --no-restore` pass.
-- [ ] Root frontend va `FTECH_THUONGMAIDIENTU` da dong bo.
-- [ ] Khong sua mat thay doi cua nguoi khac.
+- [x] `git branch --show-current` dung branch lam viec, base tu `develop`.
+- [x] `git pull origin develop` truoc khi bat dau.
+- [x] `node --check assets/js/common/db.js` pass.
+- [x] `node --check assets/js/pages/product.js` pass.
+- [x] `node --check assets/js/pages/manage-posts.js` pass.
+- [x] `node --check assets/js/pages/reviewModule.js` pass.
+- [x] `node --check assets/js/pages/trangchu.js` pass.
+- [x] `dotnet build backend/Fintech.sln --no-restore` pass.
+- [x] Root frontend va `FTECH_THUONGMAIDIENTU` da dong bo (cac file logic vua cap nhat da dong bo, gom `auth.js`).
+- [x] Khong sua mat thay doi cua nguoi khac.
 
 ## 7. Checklist demo
 
@@ -230,3 +230,51 @@ PR de xuat:
 - Base: `develop`
 - Title: `Hoan thien demo FTECH`
 - Mo ta: neu ro da test static server, node check, dotnet build, va checklist demo.
+
+## 11. Cap nhat tien do thuc te (02/06/2026)
+
+### 11.1 Chenh lech tai lieu va code hien tai
+
+- `TASK.md` muc Nhi ghi "Duyet binh luan" trong `manage-posts.*`, nhung code hien tai da tach thanh trang rieng `manage-comments.*`.
+- Quy uoc duoc chot: giu "Duyet binh luan" la menu rieng duoi "Duyet bai viet" trong sidebar Super Admin, khong tron vao `manage-posts.*`.
+
+### 11.2 Tien do task Nhi
+
+- [x] Bo sung hint/validation UI cho affiliate link khi gui duyet trong `content-manager.js` (root + mirror), bo alert tho o luong nay.
+- [x] Trang chu search/loc that trong `trangchu.js` (dang co state query/tab/brand/sort va empty state).
+- [x] Product comment area da co notice "dang cho duyet", public chi hien comment approved.
+- [x] Profile tab comment da hien trang thai Cho duyet/Da duyet/Tu choi va ly do tu choi.
+- [x] Co trang rieng `manage-comments.html` + `manage-comments.js` cho duyet comment.
+- [ ] Polish UI man demo chinh (`product.html`, `reviewModule.html`, `dashboard.html` va CSS lien quan) de giam tran text/spacings.
+- [x] Empty state/table polish cho `manage-posts.html`, `manage-affiliates.html`, `manage-partners.html`, `manage-accounts.html` (da co `t-empty` + `empty-cell` va empty message theo bo loc trong JS/CSS).
+
+### 11.3 Tien do task Hoang
+
+- [x] `db.js`: da co comment moderation data/logic (`status`, `approveComment`, `rejectComment`, `getCommentSummary`...).
+- [x] `product.js`: comment moi vao `pending`, render public chi `approved`, count theo approved.
+- [x] `manage-posts.js`: affiliate preview/count da filter theo tung bai (`getAffiliates(post.id)`).
+- [x] `postManager.js`/`content-manager.js`: author consistency theo username, chan gui duyet khi khong co affiliate active.
+- [x] `reviewModule.js`: da co gate login customer + chan duplicate review theo user/post.
+- [x] `auth.js` (root + mirror): da on dinh auth guard, bo alert tho trong guard, lock account se dieu huong ve login kem ly do.
+- [ ] Dong bo KPI click logs giua `dashboard.js` / `manage-affiliates.js` / `manage-partners.js`:
+  - `dashboard.js`: da doc `calculateCommissionSummary()` + hien `suspiciousClicks`.
+  - `manage-affiliates.js` / `manage-partners.js`: da doc click logs de tinh KPI chinh, nhung van con metric seed/hardcode (`cvr`, mot so text mo ta) chua dong bo tuyet doi.
+- [ ] Loai bo alert/confirm/prompt tho o cac luong chinh con lai.
+- [x] Build/checklist ky thuat tong (`node --check` nhom file chinh, `dotnet build`) theo checklist nghiem thu.
+- [ ] Ho tro da phien demo cung luc nhieu role trong cung mot browser profile (customer/content/partner/admin) chua co; hien dang dung chung localStorage session.
+
+### 11.4 Viec tiep theo uu tien cao nhat
+
+1. [x] P1 - On dinh auth guard khong "vang" khoi trang quan tri:
+   - `assets/js/common/auth.js` + mirror
+   - Muc tieu: khong alert tho, khong xoa session sai, dieu huong dung theo role.
+2. [ ] P1 - Dong bo KPI click logs cho affiliate/partner/dashboard:
+   - `assets/js/pages/manage-affiliates.js`
+   - `assets/js/pages/manage-partners.js`
+   - `assets/js/pages/dashboard.js`
+3. [ ] P1 - Giam alert/confirm/prompt luong chinh con lai:
+   - uu tien `reviewModule.js`, `manage-accounts.js`, `manage-partners.js`, `dashboard.js`.
+4. [ ] P1 - Ho tro da phien demo dong thoi nhieu role trong cung browser:
+   - `assets/js/pages/login.js`, `assets/js/common/auth.js`, cac page doc auth state + mirror.
+   - Muc tieu: moi tab giu session rieng de quay demo song song.
+5. [ ] P2 - Polish UI con lai + responsive de demo muot.
