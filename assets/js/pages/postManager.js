@@ -47,16 +47,32 @@ function submitPost() {
   const urlParams = new URLSearchParams(window.location.search);
   const editId = urlParams.get('id');
 
+  const targetStatus = status === 'published' ? 'approved' : status;
+
+  // Ràng buộc kiểm tra affiliate link nếu gửi duyệt hoặc phê duyệt ngay
+  if (targetStatus !== 'draft') {
+    if (!editId) {
+      alert('❌ Bài viết review bắt buộc phải có ít nhất một link affiliate hoạt động. Vui lòng lưu dưới dạng Bản nháp trước, sau đó thêm link affiliate trước khi gửi duyệt.');
+      return;
+    } else {
+      const affiliates = window.FTECHDB.getAffiliates(editId);
+      if (!affiliates || affiliates.length === 0) {
+        alert('❌ Bài viết review bắt buộc phải có ít nhất một link affiliate hoạt động mới được gửi duyệt.');
+        return;
+      }
+    }
+  }
+
   const postData = {
     title: title,
     content: content,
     excerpt: excerpt,
-    status: status === 'published' ? 'approved' : status, // map published to approved
+    status: targetStatus,
     category: 'Review',
     brand: 'FTECH',
     image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=900&q=80',
     stars: 5,
-    author: localStorage.getItem('ftech_username') || 'Trương Thị Kiều Nhi'
+    author: localStorage.getItem('ftech_user') || 'content'
   };
 
   if (editId) {

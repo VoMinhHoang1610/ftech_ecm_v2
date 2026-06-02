@@ -185,6 +185,15 @@ function openSend(id) {
 
 function confirmSend() {
   if (!currentSendId) return;
+  
+  // Rang buoc kiem tra link affiliate truoc khi cho gui duyet
+  const affiliates = window.FTECHDB.getAffiliates(currentSendId);
+  if (!affiliates || affiliates.length === 0) {
+    alert('❌ Bài viết review bắt buộc phải có ít nhất một link affiliate hoạt động mới được gửi duyệt.');
+    closeModal('sendModal');
+    return;
+  }
+  
   window.FTECHDB.updateStatus(currentSendId, 'pending');
   closeModal('sendModal');
   closeModal('previewModal');

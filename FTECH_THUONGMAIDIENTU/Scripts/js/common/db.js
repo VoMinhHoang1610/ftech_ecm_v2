@@ -685,7 +685,17 @@
       };
 
       logs.push(log);
-      if (status === 'valid') affiliates[index].clicks = Number(affiliates[index].clicks || 0) + 1;
+      if (status === 'valid') {
+        affiliates[index].clicks = Number(affiliates[index].clicks || 0) + 1;
+        
+        // Cap nhat clicks cua partner dong bo
+        const partners = read(STORAGE_KEYS.partners).map(normalizePartner);
+        const pIndex = partners.findIndex(p => p.id === affiliate.partnerId);
+        if (pIndex >= 0) {
+          partners[pIndex].clicks = Number(partners[pIndex].clicks || 0) + 1;
+          write(STORAGE_KEYS.partners, partners);
+        }
+      }
       write(STORAGE_KEYS.clickLogs, logs);
       write(STORAGE_KEYS.affiliates, affiliates);
       return { affiliate: affiliates[index], log };

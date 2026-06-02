@@ -147,11 +147,27 @@ function renderReviews() {
 }
 
 function submitReview() {
+  const isLoggedIn = localStorage.getItem('ftech_logged_in') === 'true';
+  if (!isLoggedIn) {
+    alert('❌ Vui lòng đăng nhập để gửi đánh giá.');
+    window.location.href = `login.html?from=reviewModule.html?postId=${encodeURIComponent(currentPostId)}`;
+    return;
+  }
+
   if (mainStar === 0) { alert('Vui lòng chọn số sao đánh giá.'); return; }
   const textVal = document.getElementById('rvText').value.trim();
   if (!textVal) { alert('Vui lòng nhập nội dung đánh giá.'); return; }
 
   const currentUser = localStorage.getItem('ftech_username') || 'Nguyễn Minh Vỹ';
+
+  // Chặn đánh giá trùng lặp theo cặp user/post
+  const reviews = window.FTECHDB.getReviews(currentPostId);
+  const duplicate = reviews.find(r => r.name === currentUser);
+  if (duplicate) {
+    alert('❌ Bạn đã gửi đánh giá cho sản phẩm này rồi. Mỗi tài khoản chỉ được đánh giá một lần.');
+    return;
+  }
+
   const currentAvatar = localStorage.getItem('ftech_avatar') || '👨';
 
   const newReview = {
