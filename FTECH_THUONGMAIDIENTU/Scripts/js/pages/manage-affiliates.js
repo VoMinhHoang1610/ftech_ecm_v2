@@ -346,9 +346,10 @@ document.addEventListener('DOMContentLoaded', function () {
       const partner = partners.find(p => p.id === a.partnerId);
       totalComm += affClicks * (post ? Number(post.price) || 0 : 0) * (partner ? Number(partner.commissionRate) || 0 : 0);
 
-      const cvrVal = parseFloat(a.cvr);
-      if (!isNaN(cvrVal)) {
-        sumCtr += cvrVal;
+      // Tính CVR realtime từ click logs thay vì hardcoded value
+      const postViews = post ? Number(post.views) || 0 : 0;
+      if (postViews > 0) {
+        sumCtr += (affClicks / postViews) * 100;
         ctrCount++;
       }
     });
@@ -451,6 +452,11 @@ document.addEventListener('DOMContentLoaded', function () {
       const clicksDisplay = affClicks.toLocaleString();
       const conversions = isError || isInactive ? '-' : `${(affClicks * 0.05).toFixed(1)}%`;
 
+      // Tính CVR realtime từ click logs
+      const postForCvr = posts.find(p => p.id === a.postId);
+      const postViewsForCvr = postForCvr ? Number(postForCvr.views) || 0 : 0;
+      const computedCvr = (isError || isInactive || postViewsForCvr === 0) ? '0%' : `${((affClicks / postViewsForCvr) * 100).toFixed(1)}%`;
+
       // Actions buttons
       let actionButtons = '';
       if (isError) {
@@ -485,7 +491,7 @@ document.addEventListener('DOMContentLoaded', function () {
           <div class="cell-muted">${a.partner.split(' ')[0]}</div>
           <div class="cell-muted">${a.attachedPost ? a.attachedPost.substring(0, 30) + '...' : '-'}</div>
           <div class="metric-g">${clicksDisplay}</div>
-          <div class="metric-a">${a.cvr}</div>
+          <div class="metric-a">${computedCvr}</div>
           <div class="cell-muted">${a.date}</div>
           <div class="metric-a">${a.commission}</div>
           <div><span class="${statusClass}">${statusLabel}</span></div>
