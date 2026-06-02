@@ -1,9 +1,9 @@
 const flashProducts = [
-  { image:'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=900&q=80', brand:'Shopee Mall', name:'iPhone 16 Pro Max - gia tham khao hom nay', price:'29.990.000d', old:'31.490.000d', discount:'-5%', label:'hot', stars:5 },
-  { image:'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=900&q=80', brand:'Lazada Mall', name:'WH-1000XM5 - doi tac co voucher tot', price:'6.490.000d', old:'6.990.000d', discount:'-7%', label:'new', stars:5 },
-  { image:'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=900&q=80', brand:'FTECH Picks', name:'ROG Zephyrus G14 - deal tot cho gaming', price:'31.990.000d', old:'33.500.000d', discount:'-4%', label:'sale', stars:4 },
-  { image:'https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=900&q=80', brand:'Tiki Trading', name:'Apple Watch Series 10 - doi tac con hang', price:'10.990.000d', old:'11.590.000d', discount:'-5%', label:'new', stars:5 },
-  { image:'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=900&q=80', brand:'CameraHouse', name:'EOS R50 - uu dai combo phu kien', price:'18.490.000d', old:'19.290.000d', discount:'-4%', label:'sale', stars:5 },
+  { image:'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=900&q=80', brand:'Shopee Mall', name:'iPhone 16 Pro Max - Giá tham khảo hôm nay', price:'29.990.000đ', old:'31.490.000đ', discount:'-5%', label:'hot', stars:5 },
+  { image:'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=900&q=80', brand:'Lazada Mall', name:'WH-1000XM5 - Đối tác có voucher tốt', price:'6.490.000đ', old:'6.990.000đ', discount:'-7%', label:'new', stars:5 },
+  { image:'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=900&q=80', brand:'FTECH Picks', name:'ROG Zephyrus G14 - Deal tốt cho gaming', price:'31.990.000đ', old:'33.500.000đ', discount:'-4%', label:'sale', stars:4 },
+  { image:'https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=900&q=80', brand:'Tiki Trading', name:'Apple Watch Series 10 - Đối tác còn hàng', price:'10.990.000đ', old:'11.590.000đ', discount:'-5%', label:'new', stars:5 },
+  { image:'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=900&q=80', brand:'CameraHouse', name:'EOS R50 - Ưu đãi combo phụ kiện', price:'18.490.000đ', old:'19.290.000đ', discount:'-4%', label:'sale', stars:5 },
 ];
 
 const mainProducts = window.FTECHDB.getPosts().filter(p => p.status === 'approved');
@@ -20,12 +20,12 @@ function normalizeText(value) {
 function makeLabel(t) {
   if (!t) return '';
   const map = {sale:'label-sale',new:'label-new',hot:'label-hot'};
-  const txt = {sale:'SALE',new:'MOI',hot:'HOT'};
+  const txt = {sale:'SALE',new:'MỚI',hot:'HOT'};
   return `<div class="prod-labels"><span class="label ${map[t]}">${txt[t]}</span></div>`;
 }
 
 function makeCard(p) {
-  const displayName = p.name || p.title || 'San pham cong nghe';
+  const displayName = p.name || p.title || 'Sản phẩm công nghệ';
   const displayId = p.id || 'post-1';
   const displayPrice = typeof p.price === 'number' ? window.FTECHDB.formatMoney(p.price) : p.price;
   const displayOldPrice = p.old || (p.oldPrice ? window.FTECHDB.formatMoney(p.oldPrice) : '');
@@ -41,7 +41,7 @@ function makeCard(p) {
         ${displayOldPrice?`<span class="prod-price-old">${displayOldPrice}</span>`:''}
         ${displayDiscount?`<span class="prod-discount">${displayDiscount}</span>`:''}
       </div>
-      <a class="prod-add" href="product.html?id=${displayId}">Xem review & noi mua</a>
+      <a class="prod-add" href="product.html?id=${displayId}">Xem đánh giá & nơi mua</a>
     </div>
   </div>`;
 }
@@ -101,8 +101,8 @@ function renderMainProducts() {
   if (filtered.length === 0) {
     grid.innerHTML = `
       <div class="product-empty">
-        <strong>Khong tim thay bai review phu hop.</strong>
-        <span>Thu tim theo ten san pham, thuong hieu, danh muc hoac mo ta khac.</span>
+        <strong>Không tìm thấy bài đánh giá phù hợp.</strong>
+        <span>Thử tìm theo tên sản phẩm, thương hiệu, danh mục hoặc mô tả khác.</span>
       </div>
     `;
   } else {
@@ -112,7 +112,7 @@ function renderMainProducts() {
   const result = document.getElementById('searchResultText');
   if (result) {
     const suffix = searchState.query ? ` cho "${searchState.query}"` : '';
-    result.textContent = `Dang hien thi ${filtered.length}/${mainProducts.length} bai review${suffix}.`;
+    result.textContent = `Đang hiển thị ${filtered.length}/${mainProducts.length} bài đánh giá${suffix}.`;
   }
 }
 
