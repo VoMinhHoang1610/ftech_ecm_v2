@@ -5,6 +5,7 @@
 - Luon cap nhat code moi nhat tu `develop` truoc khi lam viec.
 - Luon kiem tra `git status` va nhanh hien tai truoc khi sua.
 - Chi tao nhanh moi tu `develop`, khong tao nhanh tu nhanh cu hoac nhanh chua cap nhat.
+- Tạo nhánh riêng để làm đúng task
 - Ten nhanh phai la tieng Viet khong dau, ngan gon, de hieu.
 - Vi du ten nhanh:
   - `feat/hoan-thien-binh-luan`
@@ -22,7 +23,7 @@
 - Khi sua frontend root, can kiem tra va dong bo ban mirror trong `FTECH_THUONGMAIDIENTU` neu file tuong ung ton tai.
 
 ## 3. Quy tac commit
-
+- commit từng file đúng task
 - Commit message phai viet bang tieng Viet.
 - Commit message phai ngan gon, dung noi dung thay doi, de hieu.
 - Vi du:
@@ -46,17 +47,7 @@
   7. PR
   8. merge vao `develop`
 
-## 5. Quy tac actor, layout va menu
-
-- Content Manager va Affiliate Manager thuoc nhom Admin: logo sidebar dung `FTECH Admin` giong Super Admin.
-- Moi actor phai giu cung frame header/navbar/sidebar; menu active dung trang hien tai.
-- Content Manager sidebar toi thieu: `Tao bai viet`, `Bai viet cua toi`.
-- Super Admin: `Duyet bai viet` va `Duyet binh luan` la 2 trang rieng (`manage-posts.html`, `manage-comments.html`).
-- Super Admin khong co nut `Them doi tac`; Affiliate Manager moi co chuc nang them doi tac.
-- Trang `manage-accounts.html` chia 2 bang: tai khoan admin va tai khoan nguoi dung.
-- Khong hien thi text huong dan noi bo/placeholder danh cho nguoi code tren giao dien nguoi dung.
-
-## 6. Lenh git tham khao
+## 5. Lenh git tham khao
 
 ```bash
 git checkout develop
