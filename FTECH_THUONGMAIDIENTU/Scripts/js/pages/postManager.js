@@ -184,7 +184,7 @@ function submitPost() {
   const sideValidationMsg = document.getElementById('sideAffValidationMsg');
 
   if (!title) {
-    alert('Vui lòng nhập tiêu đề bài viết.');
+    showToast('Vui lòng nhập tiêu đề bài viết.', 'warn');
     return;
   }
 
@@ -247,7 +247,7 @@ function submitPost() {
     });
   });
 
-  alert(editId ? '✅ Đã lưu thay đổi bài viết thành công!' : '✅ Đã tạo và gửi duyệt bài viết thành công!');
+  showToast(editId ? 'Đã lưu thay đổi bài viết thành công!' : 'Đã tạo và gửi duyệt bài viết thành công!', 'success');
   window.location.href = 'content-manager.html';
 }
 

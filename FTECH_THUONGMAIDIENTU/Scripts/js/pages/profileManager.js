@@ -210,31 +210,39 @@ function saveInfo() {
   }
   
   window.FTECHDB.saveAccount(account);
-  // Update auth state in localStorage
   localStorage.setItem('ftech_username', account.name);
   
   toggleEdit();
   renderProfileData();
   
-  // Update header account chip
   if (window.FTECHAuth && window.FTECHAuth.updateDynamicHeader) {
     window.FTECHAuth.updateDynamicHeader();
   }
-  alert('Đã cập nhật thông tin cá nhân thành công!');
+  showToast('Đã cập nhật thông tin cá nhân thành công!', 'success');
 }
 
 function deleteMyReview(id) {
-  if (confirm('Bạn có chắc chắn muốn xóa đánh giá này?')) {
-    window.FTECHDB.deleteReview(id);
-    renderProfileData();
-  }
+  showConfirm(
+    'Bạn có chắc chắn muốn xóa đánh giá này?',
+    function () {
+      window.FTECHDB.deleteReview(id);
+      renderProfileData();
+      showToast('Đã xóa đánh giá.', 'info');
+    },
+    { title: 'Xóa đánh giá', icon: '🗑️', okText: 'Xóa' }
+  );
 }
 
 function deleteMyComment(id) {
-  if (confirm('Bạn có chắc chắn muốn xóa bình luận này?')) {
-    window.FTECHDB.deleteComment(id);
-    renderProfileData();
-  }
+  showConfirm(
+    'Bạn có chắc chắn muốn xóa bình luận này?',
+    function () {
+      window.FTECHDB.deleteComment(id);
+      renderProfileData();
+      showToast('Đã xóa bình luận.', 'info');
+    },
+    { title: 'Xóa bình luận', icon: '🗑️', okText: 'Xóa' }
+  );
 }
 
 function changePw() {
@@ -243,29 +251,29 @@ function changePw() {
   const confirmPw = document.getElementById('confirmPw').value.trim();
   
   if (!oldPw || !newPw || !confirmPw) {
-    alert('Vui lòng điền đầy đủ các trường mật khẩu.');
+    showToast('Vui lòng điền đầy đủ các trường mật khẩu.', 'warn');
     return;
   }
   
   const account = getCurrentAccount();
   if (oldPw !== account.password) {
-    alert('Mật khẩu cũ không chính xác.');
+    showToast('Mật khẩu cũ không chính xác.', 'error');
     return;
   }
   
   if (newPw.length < 8) {
-    alert('Mật khẩu mới phải có ít nhất 8 ký tự.');
+    showToast('Mật khẩu mới phải có ít nhất 8 ký tự.', 'warn');
     return;
   }
   if (newPw !== confirmPw) {
-    alert('Xác nhận mật khẩu mới không khớp.');
+    showToast('Xác nhận mật khẩu mới không khớp.', 'warn');
     return;
   }
   
   account.password = newPw;
   window.FTECHDB.saveAccount(account);
   
-  alert('Đổi mật khẩu thành công!');
+  showToast('Đổi mật khẩu thành công!', 'success');
   document.getElementById('oldPw').value = '';
   document.getElementById('newPw').value = '';
   document.getElementById('confirmPw').value = '';

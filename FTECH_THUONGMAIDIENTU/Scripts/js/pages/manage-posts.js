@@ -60,15 +60,19 @@ document.addEventListener('DOMContentLoaded', function () {
     btnBulkApprove.addEventListener('click', function () {
       const checked = document.querySelectorAll('.rck:checked');
       if (checked.length === 0) return;
-      if (confirm(`Bạn có chắc chắn muốn duyệt hàng loạt ${checked.length} bài viết không?`)) {
-        checked.forEach(cb => {
-          const id = cb.getAttribute('data-id');
-          if (id) FTECHDB.updateStatus(id, 'approved');
-        });
-        alert('Đã duyệt hàng loạt bài viết thành công.');
-        window.clearSel();
-        renderAll();
-      }
+      showConfirm(
+        `Bạn có chắc chắn muốn duyệt hàng loạt ${checked.length} bài viết không?`,
+        function () {
+          checked.forEach(cb => {
+            const id = cb.getAttribute('data-id');
+            if (id) FTECHDB.updateStatus(id, 'approved');
+          });
+          showToast('Đã duyệt hàng loạt bài viết thành công.', 'success');
+          window.clearSel();
+          renderAll();
+        },
+        { title: 'Duyệt hàng loạt', icon: '✅', okText: 'Duyệt tất cả', okClass: 'green' }
+      );
     });
   }
 
@@ -77,32 +81,40 @@ document.addEventListener('DOMContentLoaded', function () {
     btnBulkReject.addEventListener('click', function () {
       const checked = document.querySelectorAll('.rck:checked');
       if (checked.length === 0) return;
-      const reason = prompt('Nhập lý do từ chối chung cho các bài viết đã chọn:');
-      if (reason === null) return;
-      if (!reason.trim()) {
-        alert('Lý do từ chối không được để trống.');
-        return;
-      }
-      checked.forEach(cb => {
-        const id = cb.getAttribute('data-id');
-        if (id) FTECHDB.updateStatus(id, 'rejected', reason.trim());
-      });
-      alert('Đã từ chối hàng loạt bài viết thành công.');
-      window.clearSel();
-      renderAll();
+      showPromptModal(
+        'Từ chối hàng loạt',
+        'Nhập lý do từ chối chung...',
+        function (reason) {
+          if (!reason) {
+            showToast('Lý do từ chối không được để trống.', 'warn');
+            return;
+          }
+          checked.forEach(cb => {
+            const id = cb.getAttribute('data-id');
+            if (id) FTECHDB.updateStatus(id, 'rejected', reason);
+          });
+          showToast('Đã từ chối hàng loạt bài viết thành công.', 'info');
+          window.clearSel();
+          renderAll();
+        },
+        { icon: '✕', message: `Sẽ áp dụng cho ${checked.length} bài viết đang chọn.` }
+      );
     });
   }
 
   // --- ACTIONS ---
 
   window.doApprove = function (id) {
-    if (confirm('Bạn có chắc muốn phê duyệt bài viết này để xuất bản công khai không?')) {
-      FTECHDB.updateStatus(id, 'approved');
-      alert('Bài viết đã được duyệt và xuất bản.');
-      renderAll();
-      // If preview is open, close it
-      window.closeModal('previewModal');
-    }
+    showConfirm(
+      'Bạn có chắc muốn phê duyệt bài viết này để xuất bản công khai không?',
+      function () {
+        FTECHDB.updateStatus(id, 'approved');
+        showToast('Bài viết đã được duyệt và xuất bản.', 'success');
+        renderAll();
+        window.closeModal('previewModal');
+      },
+      { title: 'Duyệt bài viết', icon: '✅', okText: 'Duyệt & Xuất bản', okClass: 'green' }
+    );
   };
 
   window.openReject = function (id) {
@@ -119,21 +131,25 @@ document.addEventListener('DOMContentLoaded', function () {
     const modal = document.getElementById('rejectModal');
     const reason = modal.querySelector('textarea').value.trim();
     if (!reason) {
-      alert('Vui lòng nhập lý do từ chối.');
+      showToast('Vui lòng nhập lý do từ chối.', 'warn');
       return;
     }
     FTECHDB.updateStatus(currentRejectPostId, 'rejected', reason);
-    alert('Đã từ chối bài viết và gửi lý do cho tác giả.');
+    showToast('Đã từ chối bài viết và gửi lý do cho tác giả.', 'info');
     window.closeModal('rejectModal');
     renderAll();
   };
 
   window.doDelete = function (id) {
-    if (confirm('Bạn có chắc chắn muốn xóa bài viết này không? Thao tác này không thể hoàn tác.')) {
-      FTECHDB.deletePost(id);
-      alert('Đã xóa bài viết thành công.');
-      renderAll();
-    }
+    showConfirm(
+      'Bạn có chắc chắn muốn xóa bài viết này không? Thao tác này không thể hoàn tác.',
+      function () {
+        FTECHDB.deletePost(id);
+        showToast('Đã xóa bài viết thành công.', 'info');
+        renderAll();
+      },
+      { title: 'Xóa bài viết', icon: '🗑️', okText: 'Xóa vĩnh viễn' }
+    );
   };
 
   window.openPreview = function (id) {
@@ -220,12 +236,12 @@ document.addEventListener('DOMContentLoaded', function () {
     post.status = statusVal === 'Đã duyệt' ? 'approved' : statusVal === 'Chờ duyệt' ? 'pending' : statusVal === 'Từ chối' ? 'rejected' : 'draft';
 
     if (!post.title || !post.author) {
-      alert('Vui lòng điền đầy đủ Tiêu đề và Tác giả.');
+      showToast('Vui lòng điền đầy đủ Tiêu đề và Tác giả.', 'warn');
       return;
     }
 
     FTECHDB.savePost(post);
-    alert('Đã lưu cập nhật bài viết thành công.');
+    showToast('Đã lưu cập nhật bài viết thành công.', 'success');
     window.closeModal('editPostModal');
     renderAll();
   };
