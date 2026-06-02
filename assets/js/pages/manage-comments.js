@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function () {
   window.confirmRejectComment = function () {
     const reason = document.getElementById('rejectCommentReason').value.trim();
     if (!reason) {
-      alert('Vui lòng nhập lý do từ chối bình luận.');
+      showToast('Vui lòng nhập lý do từ chối bình luận.', 'warn');
       return;
     }
     FTECHDB.rejectComment(currentRejectCommentId, reason);
