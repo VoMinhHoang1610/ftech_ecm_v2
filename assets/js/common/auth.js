@@ -76,8 +76,22 @@
   // --- CLIENT-SIDE ROUTE GUARD (AUTH GATE) ---
   const currentPage = window.location.pathname.split('/').pop().toLowerCase();
   const pathname = window.location.pathname.toLowerCase();
-  const role = localStorage.getItem('ftech_role');
   const currentUser = localStorage.getItem('ftech_user');
+
+  function resolveRole() {
+    const storedRole = localStorage.getItem('ftech_role');
+    if (storedRole) return storedRole;
+    if (currentUser && window.FTECHDB) {
+      const account = window.FTECHDB.getAccount(currentUser);
+      if (account && account.role) {
+        localStorage.setItem('ftech_role', account.role);
+        return account.role;
+      }
+    }
+    return '';
+  }
+
+  const role = resolveRole();
 
   function enforceActiveAccount() {
     if (!currentUser || !window.FTECHDB) return;
@@ -100,17 +114,11 @@
   enforceActiveAccount();
 
   if (isAdminArea && role !== 'admin') {
-    alert('⚠️ Khu vực hạn chế: Chỉ Super Admin mới có quyền truy cập trang này.');
-    clearAuthStorage();
-    window.location.href = getTargetUrl('login.html');
+    window.location.href = getTargetUrl(role ? 'trangchu.html' : 'login.html');
   } else if (isContentArea && role !== 'content') {
-    alert('⚠️ Khu vực hạn chế: Chỉ Content Manager mới có quyền truy cập.');
-    clearAuthStorage();
-    window.location.href = getTargetUrl('login.html');
+    window.location.href = getTargetUrl(role ? 'trangchu.html' : 'login.html');
   } else if (isPartnerArea && role !== 'partner') {
-    alert('⚠️ Khu vực hạn chế: Chỉ Affiliate Manager mới có quyền truy cập.');
-    clearAuthStorage();
-    window.location.href = getTargetUrl('login.html');
+    window.location.href = getTargetUrl(role ? 'trangchu.html' : 'login.html');
   }
 
   // --- DYNAMIC HEADER AUTH STATE ---

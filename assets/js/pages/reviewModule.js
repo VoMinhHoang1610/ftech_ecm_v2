@@ -198,7 +198,7 @@ function submitReview() {
   const auth = getReviewAuthState();
   if (!auth.ok) {
     if (auth.reason === 'login') {
-      alert('Vui lòng đăng nhập tài khoản khách hàng để gửi đánh giá.');
+      applyReviewFormState();
       window.location.href = 'login.html';
       return;
     }

@@ -60,7 +60,7 @@ function submitComment() {
   }
 
   if (!isLoggedIn || !currentUserId) {
-    alert('Vui long dang nhap de gui binh luan.');
+    showCommentNotice('Vui lòng đăng nhập để gửi bình luận. Hệ thống sẽ chuyển bạn tới trang đăng nhập.');
     window.location.href = 'login.html';
     return;
   }
