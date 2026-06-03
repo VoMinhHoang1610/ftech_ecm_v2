@@ -32,6 +32,22 @@ const roleConfig = {
   }
 };
 
+function saveAuthSession(user) {
+  const sessionData = {
+    ftech_logged_in: 'true',
+    ftech_role: user.role,
+    ftech_username: user.name,
+    ftech_avatar: user.avatar || '👤',
+    ftech_user: user.username,
+    ftech_access_token: `mock-token-${user.username}-${Date.now()}`
+  };
+
+  Object.keys(sessionData).forEach(key => {
+    sessionStorage.setItem(key, sessionData[key]);
+    localStorage.setItem(key, sessionData[key]);
+  });
+}
+
 // Autofill fields on load for customer demo role
 document.addEventListener('DOMContentLoaded', () => {
   const identifierInput = document.getElementById('identifier');
@@ -151,13 +167,7 @@ document.getElementById('loginForm').addEventListener('submit', function (e) {
     toast.textContent = 'Xác thực thành công. Hệ thống đang điều hướng theo quyền truy cập của bạn.';
     toast.classList.add('show');
     
-    // Save login state in localStorage
-    localStorage.setItem('ftech_logged_in', 'true');
-    localStorage.setItem('ftech_role', user.role);
-    localStorage.setItem('ftech_username', user.name);
-    localStorage.setItem('ftech_avatar', user.avatar || '👤');
-    localStorage.setItem('ftech_user', user.username);
-    localStorage.setItem('ftech_access_token', `mock-token-${user.username}-${Date.now()}`);
+    saveAuthSession(user);
 
     showRoleModal(user.role, user.name);
   }, 600);

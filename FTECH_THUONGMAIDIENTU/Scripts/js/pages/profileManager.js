@@ -21,20 +21,25 @@ function toggleEdit() {
 
 // Get current account
 function getCurrentAccount() {
-  const username = localStorage.getItem('ftech_user');
+  const session = window.FTECHAuth && window.FTECHAuth.getSession ? window.FTECHAuth.getSession() : {
+    loggedIn: localStorage.getItem('ftech_logged_in') === 'true',
+    role: localStorage.getItem('ftech_role') || 'customer',
+    username: localStorage.getItem('ftech_user') || ''
+  };
+  const username = session.username;
   if (username) {
     const acc = window.FTECHDB.getAccount(username);
     if (acc) return acc;
   }
   
   // If not logged in, return null
-  const isLoggedIn = localStorage.getItem('ftech_logged_in') === 'true';
+  const isLoggedIn = session.loggedIn;
   if (!isLoggedIn) {
     return null;
   }
 
   // Fallback to role mapping if logged in but ftech_user is missing
-  const role = localStorage.getItem('ftech_role') || 'customer';
+  const role = session.role || 'customer';
   const usernameMap = {
     admin: 'admin',
     content: 'content',
@@ -210,7 +215,12 @@ function saveInfo() {
   }
   
   window.FTECHDB.saveAccount(account);
-  localStorage.setItem('ftech_username', account.name);
+  if (window.FTECHAuth && window.FTECHAuth.setItem) {
+    window.FTECHAuth.setItem('ftech_username', account.name);
+  } else {
+    sessionStorage.setItem('ftech_username', account.name);
+    localStorage.setItem('ftech_username', account.name);
+  }
   
   toggleEdit();
   renderProfileData();

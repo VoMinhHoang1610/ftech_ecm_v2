@@ -51,8 +51,13 @@ function showCommentNotice(message) {
 function submitComment() {
   const input = document.getElementById('commentInput');
   const value = input.value.trim();
-  const isLoggedIn = localStorage.getItem('ftech_logged_in') === 'true';
-  const currentUserId = localStorage.getItem('ftech_user') || '';
+  const auth = window.FTECHAuth && window.FTECHAuth.getSession ? window.FTECHAuth.getSession() : {
+    loggedIn: localStorage.getItem('ftech_logged_in') === 'true',
+    username: localStorage.getItem('ftech_user') || '',
+    displayName: localStorage.getItem('ftech_username') || ''
+  };
+  const isLoggedIn = auth.loggedIn;
+  const currentUserId = auth.username || '';
 
   if (!value) {
     showToast('Vui lòng nhập nội dung bình luận.', 'warn');
@@ -69,7 +74,7 @@ function submitComment() {
   const newComment = {
     postId: currentPostId,
     userId: currentUserId,
-    name: (account && account.name) || localStorage.getItem('ftech_username') || currentUserId,
+    name: (account && account.name) || auth.displayName || currentUserId,
     text: value,
     status: 'pending'
   };

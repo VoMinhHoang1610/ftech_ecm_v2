@@ -302,6 +302,18 @@
     localStorage.setItem(key, JSON.stringify(value));
   }
 
+  function getAuthItem(key) {
+    if (window.FTECHAuth && window.FTECHAuth.getItem) {
+      return window.FTECHAuth.getItem(key);
+    }
+    const sessionValue = sessionStorage.getItem(key);
+    return sessionValue !== null ? sessionValue : localStorage.getItem(key);
+  }
+
+  function getCurrentUsername(fallback = '') {
+    return getAuthItem('ftech_user') || fallback;
+  }
+
   function toSlugId(prefix, text) {
     return `${prefix}-${String(text || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || Date.now()}`;
   }
@@ -584,7 +596,7 @@
     },
     saveReview(review) {
       const reviews = this.getReviews();
-      const currentUser = localStorage.getItem('ftech_user') || review.userId || 'customer';
+      const currentUser = getCurrentUsername(review.userId || 'customer');
       const postId = review.postId || 'post-1';
       if (this.hasUserReviewedPost(postId, currentUser)) {
         return null;
@@ -634,14 +646,14 @@
     },
     saveComment(comment) {
       const comments = this.getComments();
-      const currentUser = localStorage.getItem('ftech_user') || '';
+      const currentUser = getCurrentUsername('');
       const currentAccount = currentUser ? this.getAccount(currentUser) : null;
       const normalized = {
         ...comment,
         id: comment.id || Date.now(),
         postId: comment.postId || 'post-1',
         userId: comment.userId || currentUser,
-        name: comment.name || (currentAccount && currentAccount.name) || localStorage.getItem('ftech_username') || 'Khach hang FTECH',
+        name: comment.name || (currentAccount && currentAccount.name) || getAuthItem('ftech_username') || 'Khach hang FTECH',
         date: comment.date || new Date().toLocaleDateString('vi-VN'),
         status: comment.status || 'pending',
         approvedBy: comment.approvedBy || '',
@@ -654,7 +666,7 @@
       write(STORAGE_KEYS.comments, comments);
       return normalized;
     },
-    approveComment(id, approvedBy = localStorage.getItem('ftech_user') || 'admin') {
+    approveComment(id, approvedBy = getCurrentUsername('admin')) {
       const comments = this.getComments();
       const index = comments.findIndex(c => String(c.id) === String(id));
       if (index < 0) return null;
@@ -670,7 +682,7 @@
       write(STORAGE_KEYS.comments, comments);
       return comments[index];
     },
-    rejectComment(id, rejectReason, rejectedBy = localStorage.getItem('ftech_user') || 'admin') {
+    rejectComment(id, rejectReason, rejectedBy = getCurrentUsername('admin')) {
       const comments = this.getComments();
       const index = comments.findIndex(c => String(c.id) === String(id));
       if (index < 0) return null;
@@ -766,7 +778,7 @@
         timestamp: now.toISOString(),
         ipAddress,
         status,
-        username: localStorage.getItem('ftech_user') || 'guest'
+        username: getCurrentUsername('guest')
       };
 
       logs.push(log);
@@ -848,7 +860,7 @@
         partnerId,
         oldRate,
         newRate,
-        changedBy: localStorage.getItem('ftech_user') || 'admin',
+        changedBy: getCurrentUsername('admin'),
         changedAt: new Date().toISOString(),
         effectiveDate: new Date().toLocaleDateString('vi-VN')
       });

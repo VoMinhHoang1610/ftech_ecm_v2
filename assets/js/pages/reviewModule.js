@@ -147,10 +147,18 @@ function renderReviews() {
 }
 
 function getReviewAuthState() {
-  const username = localStorage.getItem('ftech_user');
-  const role = localStorage.getItem('ftech_role');
-  const token = localStorage.getItem('ftech_access_token');
-  const loggedIn = localStorage.getItem('ftech_logged_in') === 'true';
+  const session = window.FTECHAuth && window.FTECHAuth.getSession ? window.FTECHAuth.getSession() : {
+    loggedIn: localStorage.getItem('ftech_logged_in') === 'true',
+    role: localStorage.getItem('ftech_role') || '',
+    username: localStorage.getItem('ftech_user') || '',
+    displayName: localStorage.getItem('ftech_username') || '',
+    avatar: localStorage.getItem('ftech_avatar') || '',
+    token: localStorage.getItem('ftech_access_token') || ''
+  };
+  const username = session.username;
+  const role = session.role;
+  const token = session.token;
+  const loggedIn = session.loggedIn;
 
   if (!username || (!token && !loggedIn)) {
     return { ok: false, reason: 'login' };
@@ -158,7 +166,7 @@ function getReviewAuthState() {
   if (role !== 'customer') {
     return { ok: false, reason: 'role' };
   }
-  return { ok: true, username };
+  return { ok: true, username, displayName: session.displayName, avatar: session.avatar };
 }
 
 function escapeHtml(value) {
@@ -329,8 +337,8 @@ function submitReview() {
   if (!textVal) { showToast('Vui lòng nhập nội dung đánh giá.', 'warn'); return; }
 
   const account = window.FTECHDB.getAccount(auth.username);
-  const currentUser = account ? account.name : localStorage.getItem('ftech_username') || auth.username;
-  const currentAvatar = account ? account.avatar : localStorage.getItem('ftech_avatar') || '👨';
+  const currentUser = account ? account.name : auth.displayName || auth.username;
+  const currentAvatar = account ? account.avatar : auth.avatar || '👨';
 
   const newReview = {
     postId: currentPostId,
