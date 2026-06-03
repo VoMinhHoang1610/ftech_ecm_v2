@@ -1,6 +1,7 @@
 (function () {
   const PROFANITY_WORDS = [
     { word: 'dm', severity: 'high' },
+    { word: 'ngu', severity: 'high' },
     { word: 'dmm', severity: 'high' },
     { word: 'dit', severity: 'high' },
     { word: 'du', severity: 'high' },

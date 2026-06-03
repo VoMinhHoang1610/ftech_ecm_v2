@@ -6,6 +6,7 @@
   const CATEGORY_MAP = {
     'dien-thoai': { label: 'Điện thoại', keywords: ['iphone', 'dien thoai', 'samsung', 'xiaomi', 'galaxy', 'phone'] },
     'laptop': { label: 'Laptop & PC', keywords: ['laptop', 'macbook', 'asus', 'dell', 'lenovo', 'pc', 'notebook'] },
+    'tablet': { label: 'Máy tính bảng', keywords: ['tablet', 'may tinh bang', 'ipad', 'galaxy tab'] },
     'man-hinh': { label: 'Màn hình', keywords: ['man hinh', 'monitor', 'display'] },
     'tv': { label: 'TV & giải trí', keywords: ['tv', 'giai tri', 'oled', 'lg', 'tivi'] },
     'tai-nghe': { label: 'Tai nghe', keywords: ['tai nghe', 'headphone', 'airpods', 'sony', 'jbl', 'wh-1000', 'wf-1000', 'earbuds'] },
@@ -24,14 +25,15 @@
     return normalizeText([p.title, p.name, p.brand, p.category, p.excerpt, p.content, (p.tags || []).join(' ')].join(' '));
   }
 
+  function getProductCategory(product) {
+    const tags = (product.tags || []).map(t => normalizeText(t));
+    const priority = ['dien-thoai', 'laptop', 'tablet', 'tai-nghe', 'dong-ho', 'may-anh', 'tv', 'man-hinh', 'loa', 'smarthome', 'gaming'];
+    return priority.find(type => tags.includes(type)) || 'all';
+  }
+
   function matchesCategory(product) {
     if (state.category === 'all') return true;
-    const catConfig = CATEGORY_MAP[state.category];
-    if (!catConfig) return true;
-    const text = getProductText(product);
-    const tags = (product.tags || []).map(t => normalizeText(t));
-    if (tags.includes(state.category)) return true;
-    return catConfig.keywords.some(kw => text.includes(kw));
+    return getProductCategory(product) === state.category;
   }
 
   function matchesBrand(product) {
@@ -77,7 +79,7 @@
       <div class="prod-img">${makeLabel(p.label)}<div class="prod-fav">♡</div><img src="${p.image}" alt="${displayName}"></div>
       <div class="prod-body">
         <div class="prod-brand">${p.brand || 'FTECH'}</div>
-        <div class="prod-category">${p.category || ''}</div>
+        <div class="prod-category">${CATEGORY_MAP[getProductCategory(p)]?.label || p.category || ''}</div>
         <div class="prod-name">${displayName}</div>
         <div class="prod-excerpt">${p.excerpt || ''}</div>
         <div class="prod-stars"><span class="stars">${'⭐'.repeat(Math.round(p.stars || 5))}</span>${p.reviews ? `<span class="reviews">(${p.reviews.toLocaleString()} đánh giá)</span>` : ''}</div>

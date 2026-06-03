@@ -240,3 +240,31 @@
 - Commit task: `0c3f422 Cai thien danh gia san pham`.
 - Merge commit: `fe58476 Merge nhanh cai thien danh gia san pham`.
 
+---
+
+## 16. Cap nhat mo rong du lieu san pham va affiliate (03/06/2026)
+
+### 16.1 Trang thai thuc hien
+
+- [x] Da tao nhanh rieng `feat/mo-rong-san-pham` tu `develop` sau khi pull moi nhat.
+- [x] Da mo rong `DEFAULT_POSTS` trong `db.js` voi 5 bai/san pham moi: Samsung Galaxy S24 Ultra, Asus ROG Zephyrus G14, Apple Watch Ultra 2, Sony WH-1000XM5, MacBook Air M3.
+- [x] Da chuan hoa bai `post-13` ve danh muc `Huong dan` de giu dung tap danh muc demo.
+- [x] Da them review mau va comment mau lien ket voi cac post moi.
+- [x] Da cap nhat `DEFAULT_AFFILIATES` bang link san pham that tu CellphoneS, Tiki va Sony Store; bo cac URL placeholder/404 trong seed mac dinh.
+- [x] Da doi nut product thanh `Di den noi ban` co dau tren giao dien.
+- [x] Da doi `partnerClick(linkId)` sang `window.open(..., '_blank')` de mo redirect affiliate o tab moi.
+- [x] Da dong bo root frontend sang mirror `FTECH_THUONGMAIDIENTU`.
+- [x] Da bo sung co che merge seed mockdata vao localStorage hien co de trang chu hien cac san pham/bai viet moi ma khong can xoa cache thu cong.
+- [x] Da siết lọc danh mục sản phẩm theo tag loại sản phẩm trong `san-pham.js`, tránh trường hợp điện thoại lọt vào Máy ảnh hoặc đồng hồ lọt vào Màn hình do keyword trong nội dung.
+- [x] Da them danh muc `Máy tính bảng` cho các bài tablet như Galaxy Tab S10 Ultra/iPad Pro M4.
+- [x] Da bo sung affiliate link cho cac bai viet chua co link va them doi tac hang Sony Store, Samsung Store.
+
+### 16.2 Kiem tra can thuc hien
+
+- [x] `node --check assets/js/common/db.js`
+- [x] `node --check assets/js/pages/product.js`
+- [x] `node --check FTECH_THUONGMAIDIENTU/Scripts/js/common/db.js`
+- [x] `node --check FTECH_THUONGMAIDIENTU/Scripts/js/pages/product.js`
+- [ ] Mo `trangchu.html`, tim cac tu khoa `Samsung`, `Asus`, `Apple Watch`, `Sony`, `MacBook`.
+- [ ] Mo tung product moi va bam `Di den noi ban`, xac nhan redirect mo tab moi va trang review van giu nguyen.
+
