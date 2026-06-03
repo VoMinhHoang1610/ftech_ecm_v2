@@ -10,7 +10,8 @@ function partnerClick(linkId) {
   }
 
   const redirectPage = window.location.pathname.toLowerCase().endsWith('.html') ? 'redirect.html' : '/redirect.html';
-  window.location.href = `${redirectPage}?linkId=${encodeURIComponent(linkId)}&from=${encodeURIComponent(window.location.pathname + window.location.search)}`;
+  const redirectUrl = `${redirectPage}?linkId=${encodeURIComponent(linkId)}&from=${encodeURIComponent(window.location.pathname + window.location.search)}`;
+  window.open(redirectUrl, '_blank');
 }
 
 function renderComments() {
@@ -163,7 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <span>${partner.desc || aff.type || 'Hang chinh hang - Ho tro tot'}</span>
               </div>
               <div class="partner-price">${window.FTECHDB.formatMoney(post.price)}</div>
-              <button class="partner-btn" onclick="partnerClick('${aff.id}')">Di den noi ban</button>
+              <button class="partner-btn" onclick="partnerClick('${aff.id}')">Đi đến nơi bán</button>
             </div>
           `;
         }).join('');
