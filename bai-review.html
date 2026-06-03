@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FTECH – Bài review & hướng dẫn công nghệ</title>
+  <meta name="description" content="Đọc bài review chuyên sâu, so sánh sản phẩm và hướng dẫn chọn mua từ đội ngũ FTECH — nội dung thật, góc nhìn thực tế." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/pages/bai-review.css">
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <a href="trangchu.html" class="logo"><span class="logo-badge">F</span>FTECH</a>
+    <nav>
+      <a href="trangchu.html">Trang chủ</a>
+      <a href="san-pham.html">Sản phẩm</a>
+      <a href="bai-review.html" class="active">Bài review</a>
+      <a href="trangchu.html#s-partners">Đối tác</a>
+      <a href="trangchu.html#s-support">Hỗ trợ</a>
+    </nav>
+    <div class="header-search">
+      <input type="text" placeholder="Tìm bài review, hãng, sản phẩm..." />
+      <button>🔍</button>
+    </div>
+    <div class="header-actions">
+      <a href="login.html" class="btn-ghost">Đăng nhập</a>
+      <a href="register.html" class="btn-primary">Đăng ký</a>
+    </div>
+  </div>
+</header>
+
+<!-- PAGE HERO -->
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div class="breadcrumb">
+      <a href="trangchu.html">Trang chủ</a><span>›</span>
+      <span>Bài review</span>
+    </div>
+    <h1>Bài review & hướng dẫn nổi bật</h1>
+    <p>Khám phá các bài đánh giá chuyên sâu, so sánh sản phẩm và hướng dẫn chọn mua — tất cả được viết từ trải nghiệm thực tế của đội ngũ FTECH.</p>
+    <div class="page-hero-stats">
+      <div class="page-hero-stat"><strong>12+</strong><span>Bài viết đã xuất bản</span></div>
+      <div class="page-hero-stat"><strong>5+</strong><span>Danh mục nội dung</span></div>
+      <div class="page-hero-stat"><strong>80K+</strong><span>Tổng lượt xem</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- FILTER TABS -->
+<div class="filter-section">
+  <div class="filter-tabs" id="reviewTabs"></div>
+</div>
+
+<!-- FEATURED -->
+<div class="featured-section">
+  <div class="section-label">Bài viết nổi bật</div>
+  <div id="featuredCard"></div>
+</div>
+
+<!-- ARTICLES -->
+<div class="articles-section">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+    <div>
+      <div class="section-label">Tất cả bài viết</div>
+      <div class="section-title" id="articlesCount"></div>
+    </div>
+  </div>
+  <div class="articles-grid" id="articlesGrid"></div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="trangchu.html" class="logo"><span class="logo-badge">F</span>FTECH</a>
+        <p>FTECH là nền tảng review công nghệ và kết nối đối tác mua hàng uy tín, giúp người dùng đọc đúng thông tin trước khi đưa ra quyết định mua.</p>
+        <div class="footer-socials">
+          <a class="social-btn" href="trangchu.html#s-support">📘</a>
+          <a class="social-btn" href="trangchu.html#s-support">📷</a>
+          <a class="social-btn" href="trangchu.html#s-support">▶️</a>
+          <a class="social-btn" href="trangchu.html#s-support">💬</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Nội dung</h4>
+        <ul>
+          <li><a href="san-pham.html?category=dien-thoai">Review điện thoại</a></li>
+          <li><a href="san-pham.html?category=laptop">Laptop & PC</a></li>
+          <li><a href="san-pham.html">Tất cả sản phẩm</a></li>
+          <li><a href="bai-review.html">Bài review</a></li>
+          <li><a href="bai-review.html">Tin công nghệ</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Hỗ trợ</h4>
+        <ul>
+          <li><a href="trangchu.html#s-flow">Cách FTECH hoạt động</a></li>
+          <li><a href="trangchu.html#s-support">Chính sách nội dung</a></li>
+          <li><a href="trangchu.html#s-partners">Affiliate minh bạch</a></li>
+          <li><a href="trangchu.html#s-support">Gửi yêu cầu hỗ trợ</a></li>
+          <li><a href="trangchu.html#s-support">Liên hệ</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Liên hệ</h4>
+        <ul>
+          <li><a href="trangchu.html#s-support">📍 48 Cao Thắng, Hải Châu, ĐN</a></li>
+          <li><a href="tel:0905123456">📞 0905.123.456</a></li>
+          <li><a href="mailto:hello@ftech.vn">✉️ hello@ftech.vn</a></li>
+          <li><a href="trangchu.html#s-support">🕐 8:00 – 21:00 hàng ngày</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 FTECH Technology. All rights reserved.</p>
+      <div class="footer-payments">
+        <span class="payment-icon">Shopee</span>
+        <span class="payment-icon">Lazada</span>
+        <span class="payment-icon">Tiki</span>
+        <span class="payment-icon">Affiliate</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/common/db.js"></script>
+<script src="assets/js/common/auth.js"></script>
+<script src="assets/js/pages/bai-review.js"></script>
+</body>
+</html>
