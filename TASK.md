@@ -217,3 +217,26 @@
 
 ---
 
+## 15. Cap nhat tien do danh gia san pham (03/06/2026)
+
+### 15.1 Trang thai
+
+- [x] Da hoan thien Verified Purchase Check: review chi gui duoc khi user co click log `valid` dung `userId` va `postId`.
+- [x] Da them `assets/js/common/profanity-filter.js` voi 80 tu cam Viet/Anh, ho tro normalize tieng Viet va bat bypass bang ky tu chen/leetspeak.
+- [x] Da them he thong canh bao review trong `db.js`: `getReviewWarnings`, `isReviewLocked`, `addWarning`, `clearWarnings`.
+- [x] Da them lock 3 ngay khi user bi canh bao 3 lan vi noi dung khong phu hop.
+- [x] Da cap nhat `submitReview()` trong `reviewModule.js` theo thu tu: login/customer -> lock -> mua hang -> profanity -> duplicate -> validate -> save.
+- [x] Da them modal "Ban chua mua hang", modal khoa tai khoan va modal canh bao ngon tu co noi dung tieng Viet co dau.
+- [x] Da them `hasValidPurchase` vao review object.
+- [x] Da them mock click logs cho `customer` va warning seed cho `customer2`/`admin2`.
+- [x] Da sua login review gate: login set `ftech_access_token` mock va review chap nhan session cu co `ftech_logged_in=true`.
+- [x] Da dong bo root frontend va mirror `FTECH_THUONGMAIDIENTU`.
+
+### 15.2 Kiem tra va GitHub
+
+- [x] `node --check` cac file JS lien quan root + mirror: pass.
+- [x] Da push nhanh `feat/cai-thien-danh-gia` len GitHub.
+- [x] Da merge vao `develop` va push `origin/develop`.
+- Commit task: `0c3f422 Cai thien danh gia san pham`.
+- Merge commit: `fe58476 Merge nhanh cai thien danh gia san pham`.
+
