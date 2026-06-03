@@ -389,18 +389,28 @@
     return post ? post.id : 'post-1';
   }
 
+  function buildInternalAffiliateUrl(id) {
+    return `redirect.html?linkId=${encodeURIComponent(id)}`;
+  }
+
   function normalizeAffiliate(affiliate) {
     const partnerId = affiliate.partnerId || getPartnerIdByName(affiliate.partner);
     const postId = affiliate.postId || getPostIdByTitle(affiliate.attachedPost);
     const partner = read(STORAGE_KEYS.partners, []).find(p => p.id === partnerId);
     const post = read(STORAGE_KEYS.posts, []).find(p => p.id === postId);
+    const id = affiliate.id || `aff-${Date.now()}`;
+    const originalUrl = affiliate.originalUrl || affiliate.url || '';
     return {
       ...affiliate,
-      id: affiliate.id || `aff-${Date.now()}`,
+      id,
+      code: affiliate.code || toSlugId('link', affiliate.name || id),
       postId,
       partnerId,
       partner: affiliate.partner || (partner && partner.name) || 'Shopee Affiliate',
       attachedPost: affiliate.attachedPost || (post && post.title) || '',
+      originalUrl,
+      url: originalUrl,
+      internalUrl: affiliate.internalUrl || buildInternalAffiliateUrl(id),
       clicks: Number(affiliate.clicks) || 0,
       status: affiliate.status || 'active'
     };

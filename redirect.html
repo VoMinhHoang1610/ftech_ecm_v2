@@ -85,10 +85,11 @@
           : ' Lượt click hợp lệ đã được đồng bộ vào dashboard.';
 
         statusEl.textContent = `Đang chuyển đến ${result.affiliate.partner}.${suffix}`;
-        fallbackLink.href = result.affiliate.url;
+        const targetUrl = result.affiliate.originalUrl || result.affiliate.url;
+        fallbackLink.href = targetUrl;
 
         setTimeout(() => {
-          window.location.href = result.affiliate.url;
+          window.location.href = targetUrl;
         }, 900);
       }
     }

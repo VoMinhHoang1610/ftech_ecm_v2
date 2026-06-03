@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function () {
       document.getElementById('affiliatePartnerField').value = aff.partner || 'Shopee Affiliate';
       document.getElementById('affiliatePostField').value = aff.attachedPost || '';
       document.getElementById('affiliateStatusField').value = aff.status || 'active';
-      document.getElementById('affiliateUrlField').value = aff.url || '';
+      document.getElementById('affiliateUrlField').value = aff.originalUrl || aff.url || '';
       document.getElementById('affiliateImageField').value = aff.image || '';
       document.getElementById('affiliateNoteField').value = aff.note || '';
     }
@@ -140,6 +140,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (!name || !url) {
       showToast('Vui lòng nhập tên link/sản phẩm và đường dẫn affiliate.', 'warn');
+      return;
+    }
+
+    if (!/^https?:\/\//i.test(url)) {
+      showToast('URL san pham phai bat dau bang http:// hoac https://.', 'warn');
       return;
     }
 
@@ -167,7 +172,9 @@ document.addEventListener('DOMContentLoaded', function () {
     affData.partner = partner;
     affData.attachedPost = attachedPost;
     affData.status = status;
+    affData.originalUrl = url;
     affData.url = url;
+    affData.internalUrl = `redirect.html?linkId=${encodeURIComponent(affData.id)}`;
     affData.image = image || 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=120&q=80';
     affData.note = note;
 
@@ -415,7 +422,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // 3. Sort list
     if (filterSort === 'clicks') {
-      filtered.sort((a, b) => b.clicks - a.clicks);
+      filtered.sort((a, b) => {
+        const bClicks = clickLogs.filter(log => log.linkId === b.id && log.status === 'valid').length;
+        const aClicks = clickLogs.filter(log => log.linkId === a.id && log.status === 'valid').length;
+        return bClicks - aClicks;
+      });
     } else if (filterSort === 'newest') {
       filtered.sort((a, b) => {
         const da = new Date(a.date.split('/').reverse().join('-'));
@@ -447,6 +458,8 @@ document.addEventListener('DOMContentLoaded', function () {
       const statusClass = isError ? 's-error' : isInactive ? 's-inactive' : 's-active';
       const titleSpan = isError ? `${a.name} <span class="u-style-049">LINK LỖI</span>` : a.name;
       const urlClass = isError ? 'link-url u-style-046' : 'link-url';
+      const originalUrl = a.originalUrl || a.url || '';
+      const internalUrl = a.internalUrl || `redirect.html?linkId=${encodeURIComponent(a.id)}`;
       
       const affClicks = clickLogs.filter(log => log.linkId === a.id && log.status === 'valid').length;
       const clicksDisplay = affClicks.toLocaleString();
@@ -482,9 +495,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 <span>${titleSpan}</span>
               </a>
             </div>
-            <div class="${urlClass}">${a.url}</div>
+            <div class="${urlClass}">Noi bo: ${internalUrl}</div>
+            <div class="link-url">Goc: ${originalUrl}</div>
             <div class="link-tags">
               <span class="ltag">${a.partner}</span>
+              <span class="ltag">Link ID: ${a.id}</span>
               <span class="ltag">Tác giả: ${a.author || 'Super Admin'}</span>
             </div>
           </div>
