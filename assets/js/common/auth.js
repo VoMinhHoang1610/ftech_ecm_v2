@@ -20,6 +20,27 @@
     });
   }
 
+  function getAuthItem(key) {
+    const sessionValue = sessionStorage.getItem(key);
+    return sessionValue !== null ? sessionValue : localStorage.getItem(key);
+  }
+
+  function setAuthItem(key, value) {
+    sessionStorage.setItem(key, value);
+    localStorage.setItem(key, value);
+  }
+
+  function getSession() {
+    return {
+      loggedIn: getAuthItem('ftech_logged_in') === 'true',
+      role: getAuthItem('ftech_role') || '',
+      username: getAuthItem('ftech_user') || '',
+      displayName: getAuthItem('ftech_username') || '',
+      avatar: getAuthItem('ftech_avatar') || '',
+      token: getAuthItem('ftech_access_token') || ''
+    };
+  }
+
   function getTargetUrl(staticPage) {
     if (!staticPage) return '';
     // If not running in a static HTML environment (e.g. MVC)
@@ -77,15 +98,15 @@
   // --- CLIENT-SIDE ROUTE GUARD (AUTH GATE) ---
   const currentPage = window.location.pathname.split('/').pop().toLowerCase();
   const pathname = window.location.pathname.toLowerCase();
-  const currentUser = localStorage.getItem('ftech_user');
+  const currentUser = getAuthItem('ftech_user');
 
   function resolveRole() {
-    const storedRole = localStorage.getItem('ftech_role');
+    const storedRole = getAuthItem('ftech_role');
     if (storedRole) return storedRole;
     if (currentUser && window.FTECHDB) {
       const account = window.FTECHDB.getAccount(currentUser);
       if (account && account.role) {
-        localStorage.setItem('ftech_role', account.role);
+        setAuthItem('ftech_role', account.role);
         return account.role;
       }
     }
@@ -124,11 +145,11 @@
 
   // --- DYNAMIC HEADER AUTH STATE ---
   function updateDynamicHeader() {
-    const role = localStorage.getItem('ftech_role');
+    const role = getAuthItem('ftech_role');
     if (!role) return;
 
-    const username = localStorage.getItem('ftech_username') || 'Nguyễn Minh Vỹ';
-    let avatar = localStorage.getItem('ftech_avatar') || '👤';
+    const username = getAuthItem('ftech_username') || 'Nguyễn Minh Vỹ';
+    let avatar = getAuthItem('ftech_avatar') || '👤';
     
     if (avatar.startsWith('http')) {
       avatar = `<img src="${avatar}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
@@ -176,11 +197,11 @@
   }
 
   function updateSidebarUser() {
-    const role = localStorage.getItem('ftech_role');
+    const role = getAuthItem('ftech_role');
     if (!role) return;
 
-    const username = localStorage.getItem('ftech_username');
-    const avatar = localStorage.getItem('ftech_avatar');
+    const username = getAuthItem('ftech_username');
+    const avatar = getAuthItem('ftech_avatar');
 
     // Update names
     document.querySelectorAll('.sb-user-name, .sb-name').forEach(el => {
@@ -245,6 +266,11 @@
   window.FTECHAuth = {
     logout,
     clearAuthStorage,
+    getAuthItem,
+    getItem: getAuthItem,
+    setAuthItem,
+    setItem: setAuthItem,
+    getSession,
     updateDynamicHeader,
     getTargetUrl
   };

@@ -15,7 +15,7 @@ function showSendFeedback(message, isError = false) {
 /* ── RENDER DYNAMIC POST ROWS ── */
 function renderPostRows(statusFilter = 'all') {
   const posts = window.FTECHDB.getPosts();
-  const currentAuthor = localStorage.getItem('ftech_user') || 'content';
+  const currentAuthor = window.FTECHAuth && window.FTECHAuth.getItem ? window.FTECHAuth.getItem('ftech_user') || 'content' : localStorage.getItem('ftech_user') || 'content';
   
   // Filter by author to simulate private creator workspace
   const myPosts = posts.filter(p => p.author === currentAuthor);

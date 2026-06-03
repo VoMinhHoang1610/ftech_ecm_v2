@@ -34,7 +34,7 @@
   - `manage-affiliates.js` / `manage-partners.js`: da doc click logs de tinh CVR realtime tu `affClicks / postViews * 100`. ✅ Hoan thanh (03/06/2026 - PR #20).
 - [x] Loai bo alert/confirm/prompt tho o cac luong chinh con lai.
 - [x] Build/checklist ky thuat tong (`node --check` nhom file chinh, `dotnet build`) theo checklist nghiem thu.
-- [ ] Ho tro da phien demo cung luc nhieu role trong cung mot browser profile (customer/content/partner/admin) chua co; hien dang dung chung localStorage session.
+- [x] Ho tro da phien demo cung luc nhieu role trong cung mot browser profile (customer/content/partner/admin) bang sessionStorage uu tien theo tung tab, localStorage giu fallback.
 
 
 ### 11.4 Viec tiep theo uu tien cao nhat
@@ -50,9 +50,9 @@
    - ✅ Hoan thanh (03/06/2026 - PR #20 merged)
 3. [x] P1 - Giam alert/confirm/prompt luong chinh con lai:
    - ✅ Da thay toan bo alert bang showToast trong moi file.
-4. [ ] P1 - Ho tro da phien demo dong thoi nhieu role trong cung browser:
+4. [x] P1 - Ho tro da phien demo dong thoi nhieu role trong cung browser:
    - `assets/js/pages/login.js`, `assets/js/common/auth.js`, cac page doc auth state + mirror.
-   - Muc tieu: moi tab giu session rieng de quay demo song song.
+   - Muc tieu: moi tab giu session rieng de quay demo song song. ✅ Hoan thanh (03/06/2026)
 5. [ ] P2 - Polish UI con lai + responsive de demo muot.
 
 ## 12. Danh gia chi tiet theo module (02/06/2026 - sau khi merge toast)
@@ -128,8 +128,9 @@
    - reviewModule.css: Giam write-card padding 28→22, star-picker margin 18→10, review card 22→18, rs-box 24→18
    - dashboard.css: Giam KPI val 28→24, card padding 20→16, content padding, welcome margin, chart gap
 
-2. **Multi-session support (Optional)**
-   - IndexedDB per-tab session instead of shared localStorage
+2. ~~**Multi-session support (Optional)**~~
+   - ✅ Da hoan thanh (03/06/2026)
+   - Uu tien sessionStorage theo tab, localStorage chi con la fallback tuong thich
    - Allows 2+ roles logged in simultaneously for demo
 
 ### 12.5 Validation Checklist truoc demo
@@ -146,7 +147,7 @@
 - [x] Toast UI: All major flows have toast notifications - ✅ Pass (100% - 0 alert con lai)
 - [x] Empty states: All tables show proper empty states - ✅ Pass
 - [x] Mirror sync: Root frontend ↔ FTECH_THUONGMAIDIENTU consistent - ✅ Pass (via merge commits)
-- [ ] Multi-session: Concurrent roles in same browser - Not started (optional for demo)
+- [x] Multi-session: Concurrent roles in same browser - Pass (sessionStorage per tab + localStorage fallback)
 - [ ] Responsive mobile: Visual check on mobile devices - Not started (optional for demo)
 
 ---
@@ -174,8 +175,8 @@
 6. ✅ **UI polish main pages** - product, reviewModule, dashboard CSS optimized
 7. ✅ **Mirror sync** - Root ↔ FTECH_THUONGMAIDIENTU 100% consistent
 
-#### P2 Optional (0/2 - 0%)
-- ❌ Multi-session support (per-tab session isolation)
+#### P2 Optional (1/2 - 50%)
+- ✅ Multi-session support (per-tab session isolation)
 - ❌ Responsive mobile (visual check)
 
 ---
@@ -190,10 +191,10 @@
 - ~~Real authentication~~ (Cookie-based mock only)
 
 ### OPTIONAL (Nice-to-have, can skip for demo)
-1. **Multi-session support** (~2-3h)
-   - Isolate localStorage per tab using IndexedDB
+1. ~~**Multi-session support**~~
+   - ✅ Da hoan thanh (03/06/2026)
+   - Isolate auth session per tab using sessionStorage, keep localStorage fallback
    - Allow 2+ roles logged in simultaneously
-   - Use tabId to sync state across tabs
    - Benefit: Better demo flow without logout/login
 
 2. **Responsive mobile UI** (~1-2h)

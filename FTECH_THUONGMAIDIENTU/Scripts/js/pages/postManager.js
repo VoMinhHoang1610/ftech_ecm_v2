@@ -230,7 +230,8 @@ function submitPost() {
     postData.id = editId;
   }
   postData.status = normalizedStatus;
-  postData.author = (existingPost && existingPost.author) || localStorage.getItem('ftech_user') || 'content';
+  const currentAuthor = window.FTECHAuth && window.FTECHAuth.getItem ? window.FTECHAuth.getItem('ftech_user') : localStorage.getItem('ftech_user');
+  postData.author = (existingPost && existingPost.author) || currentAuthor || 'content';
 
   const savedPost = window.FTECHDB.savePost(postData);
 
